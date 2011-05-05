@@ -1,0 +1,41 @@
+--- 
+default: 
+  template_dir: ./templates
+  state_dir: ./state
+  to_email_address: noreply@technosorcery.net
+  from_email_address: noreply@technosorcery.net
+  reply_to_email_address: noreply@technosorcery.net
+  html_email: false
+  group_pull_request_updates: true
+  alert_on_close: true
+  # Both opened_subject, and closed_subject are rendered using Mustache
+  # and provided the following information:
+  #
+  # {
+  #   "repository_name": "technosorcery.net"
+  #   "title": "Here's a new blog post!",
+  #   "user": {
+  #     "name": "Jacob Helwig",
+  #     "login": "jhelwig"
+  #   }
+  # }
+  opened_subject: "New pull request for {{repository_name}}: {{title}}"
+  closed_subject: "Closed pull request {{repository_name}}: {{title}}"
+
+jhelwig/Ruby-GitHub-Pull-Request-Bot: 
+  # You can override the template_dir on a per-repository basis by
+  # specifying it in the section for that repository.
+  template_dir: ./templates-github-pull-request-bot
+  # The same goes for to_email_address, from_email_address,
+  # reply_to_email_address, html_email, group_pull_request_updates,
+  # alert_on_close, opened_subject, closed_subject.
+  to_email_address: noreply+ruby-github-pull-request-email-bot@technosorcery.net
+  from_email_address: noreply+ruby-github-pull-request-email-bot@technosorcery.net
+  reply_to_email_address: noreply+ruby-github-pull-request-email-bot@technosorcery.net
+  html_email: true
+  group_pull_request_updates: false
+  alert_on_close: false
+
+jhelwig/technosorcery.net: {}
+  # You don't actually need to have anything in a section at all, if you
+  # just want to use the settings as defined in the "default" section.
