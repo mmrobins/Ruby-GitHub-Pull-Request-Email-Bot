@@ -423,34 +423,11 @@ Description:
           end
 
           it 'should send a single message' do
-            pull_two_body = <<-HERE
-Please review the pull request #2.
-
-https://github.com/benprew/pony/pull/2 was opened by Daniel Lopes (danielvlopes): Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option
-
-Some more information about the pull request:
-  Opened: 2011-03-23T04:13:59Z
-  Merges cleanly: No
-  Based on: benprew:master (e5f5f1ea3ebac5e2db5ba7b45bdc2c5b9c4ea9ad)
-  Requested merge: danielvlopes:master (562c2072ec478dbf540ffa3b577243be82e53235)
-
-Description:
-
-Hello, thanks for the Gem, it's awesome.\r
-\r
-I did a quick commit moving the code to Bundler. So I was able to do a bundle install and run the specs without the need of manual installations. I also added Rspec as a development dependency.\r
-\r
-I also moved most of the files from tabs to softabs (2 spaces) which is the convention for Ruby files. In this way we avoid issues with diferent identations depending of which Text Editor/ IDE you are using.\r
-\r
-My last contribution is a reply_to option that Mail supports but Pony not. It's importanto for contact forms because the user that will receive the email could quickly reply who sended the message.\r
-\r
-Thanks.
-            HERE
             Pony.expects(:mail).once.with(
               :to      => 'noreply+to-address@technosorcery.net',
               :from    => 'noreply+from-address@technosorcery.net',
               :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
-              :body    => pull_two_body,
+              :body    => read_fixture('json/single_repo_single_open_pull_request/individual/body.txt'),
               :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
             ).returns nil
 
@@ -464,50 +441,20 @@ Thanks.
               JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json'))
             )
           end
+
           it 'should send one message per open pull request' do
-            pull_eight_body = <<-HERE
-Please review the pull request #8.
-
-https://github.com/puppetlabs/facter/pull/8 was opened by Ramon van Alteren (ramonvanalteren): Please pull virtualbox support for the virtual fact
-
-Some more information about the pull request:
-  Opened: 2011-04-20T10:58:36Z
-  Merges cleanly: Yes
-  Based on: puppetlabs:master (cfcc4285e2e505700e16142deb10f58523a05f08)
-  Requested merge: ramonvanalteren:master (447fb980e1d28917b43100bdc1e8331dbc48c25d)
-
-Description:
-
-I added virtualbox support in the virtual fact for lspci and dmidecode\r
-It works, provided (on my system) that you are root when  running facter due to the permissions on lspci and dmidecode
-            HERE
-            pull_six_body = <<-HERE
-Please review the pull request #6.
-
-https://github.com/puppetlabs/facter/pull/6 was opened by Mauro Pompilio (malditogeek): Ruby 1.9 fixes.
-
-Some more information about the pull request:
-  Opened: 2011-04-12T23:43:48Z
-  Merges cleanly: No
-  Based on: puppetlabs:next (6e02daa1ed56f9758226f4e640ec419395868728)
-  Requested merge: malditogeek:ticket/next/6614 (1eb3667142d2f56ad5436d91c457a776c52dd3c7)
-
-Description:
-
-Ticket: https://projects.puppetlabs.com/issues/6614
-            HERE
             Pony.expects(:mail).once.with(
               :to      => 'noreply+to-address@technosorcery.net',
               :from    => 'noreply+from-address@technosorcery.net',
               :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
-              :body    => pull_eight_body,
+              :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_eight_body.txt'),
               :subject => 'New pull request: Please pull virtualbox support for the virtual fact'
             ).returns nil
             Pony.expects(:mail).once.with(
               :to      => 'noreply+to-address@technosorcery.net',
               :from    => 'noreply+from-address@technosorcery.net',
               :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
-              :body    => pull_six_body,
+              :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_six_body.txt'),
               :subject => 'New pull request: Ruby 1.9 fixes.'
             ).returns nil
 
