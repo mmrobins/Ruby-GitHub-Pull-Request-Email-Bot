@@ -46,11 +46,11 @@ class PullRequestBot
 
     pull_requests.each do |request|
       Pony.mail(
-        :to        => settings["to_email_address"],
-        :from      => settings["from_email_address"],
-        :headers   => { 'Reply-To' => settings["reply_to_email_address"] },
-        :html_body => request['html_url'],
-        :subject   => Mustache.render(settings['opened_subject'], request)
+        :to      => settings["to_email_address"],
+        :from    => settings["from_email_address"],
+        :headers => { 'Reply-To' => settings["reply_to_email_address"] },
+        :body    => Mustache.render(File.read(File.join(settings['template_dir'], 'individual_opened.mustache')), request),
+        :subject => Mustache.render(settings['opened_subject'], request)
       )
     end
   end
