@@ -370,6 +370,7 @@ describe PullRequestBot do
       describe 'with a single configured repository' do
         before :each do
           @template_dir = File.join @config_dir, 'templates'
+          populate_template_dir(@template_dir, 'text')
           write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
@@ -384,22 +385,6 @@ describe PullRequestBot do
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
           })
-
-          write_file 'templates/individual_opened.mustache', <<-HERE
-Please review the pull request #\{{number}}.
-
-{{html_url}} was opened by {{#user}}{{name}} ({{login}}){{/user}}: {{title}}
-
-Some more information about the pull request:
-  Opened: {{created_at}}
-  Merges cleanly: {{#mergeable}}Yes{{/mergeable}}{{^mergeable}}No{{/mergeable}}
-  {{#base}}Based on: {{label}} ({{sha}}){{/base}}
-  {{#head}}Requested merge: {{label}} ({{sha}}){{/head}}
-
-Description:
-
-{{body}}
-          HERE
 
           @bot = PullRequestBot.new
         end
