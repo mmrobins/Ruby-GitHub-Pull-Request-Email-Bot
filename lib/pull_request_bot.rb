@@ -19,10 +19,10 @@ class PullRequestBot
 
   def repositories
     unless @repositories
-      @repositories = self.config.reject {|k,v| k == "default"}
+      @repositories = config.reject {|k,v| k == "default"}
 
       @repositories.keys.each do |repository|
-        @repositories[repository] = self.config['default'].merge(self.config[repository])
+        @repositories[repository] = config['default'].merge(config[repository])
       end
     end
 
@@ -32,12 +32,12 @@ class PullRequestBot
   private
 
   def read_config
-    self.config = YAML.load(File.read(self.opts[:config]))
+    self.config = YAML.load(File.read(opts[:config]))
   end
 
   def validate_config
-    raise ArgumentError.new("In '#{self.opts[:config]}' there must be a 'default' section.") unless
-      self.config && self.config.is_a?(Hash) && self.config['default']
+    raise ArgumentError.new("In '#{opts[:config]}' there must be a 'default' section.") unless
+      config && config.is_a?(Hash) && config['default']
 
     # Enumerate all of the 'globally required' default settings,
     # making sure that each one is there.
@@ -52,17 +52,17 @@ class PullRequestBot
      alert_on_close
      opened_subject
     }.each do |key|
-      raise ArgumentError.new("In '#{self.opts[:config]}' the 'default' section must contain '#{key}'") unless
-        self.config['default'].has_key?(key)
+      raise ArgumentError.new("In '#{opts[:config]}' the 'default' section must contain '#{key}'") unless
+        config['default'].has_key?(key)
     end
 
-    raise ArgumentError.new("In '#{self.opts[:config]}' the 'default' section must contain 'closed_subject' when 'alert_on_close' is true.") if
-      self.config['default']['alert_on_close'] and not self.config['default'].has_key?('closed_subject')
+    raise ArgumentError.new("In '#{opts[:config]}' the 'default' section must contain 'closed_subject' when 'alert_on_close' is true.") if
+      config['default']['alert_on_close'] and not config['default'].has_key?('closed_subject')
 
     raise ArgumentError.new("There must be at least one repository configured (user-name/repository-name)") unless
-      self.config.keys.count > 1
+      config.keys.count > 1
 
-    self.config.keys.each do |section|
+    config.keys.each do |section|
       next if section == "default"
 
       raise ArgumentError.new("Repositories must be of the form 'user-name/repository-name': #{section}") unless
