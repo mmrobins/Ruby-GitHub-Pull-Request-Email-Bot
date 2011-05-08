@@ -1,7 +1,8 @@
 require 'rubygems'
+require 'httparty'
+require 'pony'
 require 'trollop'
 require 'yaml'
-require 'httparty'
 
 class PullRequestBot
   include HTTParty
@@ -20,7 +21,7 @@ class PullRequestBot
 
   def run
     repositories.each do |repository, settings|
-      handle_open_pull_requests(repository, settings)
+      handle_pull_requests(repository, settings, :open)
     end
   end
 
@@ -38,9 +39,19 @@ class PullRequestBot
 
   private
 
-  def handle_open_pull_requests(repository, settings)
-    open_pull_requests = get("/pulls/#{repository}/open")["pulls"]
-    return unless open_pull_requests
+  def handle_pull_requests(repository, settings, status)
+    pull_requests = get("/pulls/#{repository}/#{status}")["pulls"]
+    return unless pull_requests
+
+    pull_requests.each do |request|
+      Pony.mail(
+        :to        => settings["to_email_address"],
+        :from      => settings["from_email_address"],
+        :headers   => { 'Reply-To' => settings["reply_to_email_address"] },
+        :html_body => request['html_url'],
+        :subject   => settings['opened_subject']
+      )
+    end
   end
 
   def read_config

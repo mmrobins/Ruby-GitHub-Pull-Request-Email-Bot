@@ -18,8 +18,9 @@ How do I get it up and running?
 Make sure you have the following gems installed:
 
   * HTTParty
+  * Pony
 
-Should be as simple as running `gem install httparty`.
+Should be as simple as running `gem install httparty pony`.
 
 Copy `config.sample.yaml` to `config.yaml`, and edit to taste.
 
