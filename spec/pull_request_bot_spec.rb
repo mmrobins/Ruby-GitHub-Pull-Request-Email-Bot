@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
 
 require 'spec_helper'
 
@@ -58,19 +57,19 @@ describe PullRequestBot do
       end
 
       it 'should require a default template_dir' do
-        write_config <<-HERE
----
-default:
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'template_dir'/
@@ -78,19 +77,19 @@ default:
       end
 
       it 'should require a default state_dir' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'state_dir'/
@@ -98,19 +97,19 @@ default:
       end
 
       it 'should require a default to_email_address' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'to_email_address'/
@@ -118,19 +117,19 @@ default:
       end
 
       it 'should require a default from_email_address' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'from_email_address'/
@@ -138,19 +137,19 @@ default:
       end
 
       it 'should require a default reply_to_email_address' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'reply_to_email_address'/
@@ -158,19 +157,19 @@ default:
       end
 
       it 'should require a default html_email' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'html_email'/
@@ -178,19 +177,19 @@ default:
       end
 
       it 'should require a default group_pull_request_updates' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  alert_on_close: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'alert_on_close'             => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'group_pull_request_updates'/
@@ -198,19 +197,19 @@ default:
       end
 
       it 'should require a default alert_on_close' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  opened_subject: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'opened_subject'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'alert_on_close'/
@@ -218,19 +217,19 @@ default:
       end
 
       it 'should require a default opened_subject' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: ''
-  closed_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => '',
+            'closed_subject'             => ''
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'opened_subject'/
@@ -238,19 +237,19 @@ default:
       end
 
       it 'should require a default closed_subject when alert_on_close is true' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: true
-  opened_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => true,
+            'opened_subject'             => '',
+          }
+        })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /'default' section must contain 'closed_subject'/
@@ -258,58 +257,60 @@ default:
       end
 
       it 'should not require a default closed_subject when alert_on_close is false' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: false
-  opened_subject: ''
-jhelwig/Ruby-GitHub-Pull-Request-Bot: {}
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => false,
+            'opened_subject'             => '',
+          },
+          'jhelwig/Ruby-GitHub-Pull-Request-Bot' =>  {}
+        })
 
         lambda { PullRequestBot.new }.should_not raise_error
       end
 
       it 'should require a repository section' do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: false
-  opened_subject: ''
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => false,
+            'opened_subject'             => '',
+          },
+        })
+
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /There must be at least one repository configured/
         )
       end
 
       it "should require a repository section of the form 'user-name/repository-name'" do
-        write_config <<-HERE
----
-default:
-  template_dir: ''
-  state_dir: ''
-  to_email_address: ''
-  from_email_address: ''
-  reply_to_email_address: ''
-  html_email: ''
-  group_pull_request_updates: ''
-  alert_on_close: false
-  opened_subject: ''
-not-a-valid-repository-section: {}
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => false,
+            'opened_subject'             => '',
+          },
+          'not-a-valid-repository-section' =>  {}
+        })
+
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError, /Repositories must be of the form 'user-name\/repository-name': not-a-valid-repository-section/
         )
@@ -318,41 +319,42 @@ not-a-valid-repository-section: {}
 
     describe 'repository settings' do
       it 'should inherit from the default section' do
-        write_config <<-HERE
----
-default:
-  template_dir: './this-is-the-template-dir'
-  state_dir: './this-is-the-state-dir'
-  to_email_address: 'noreply+to-address@technosorcery.net'
-  from_email_address: 'noreply+from-address@technosorcery.net'
-  reply_to_email_address: 'noreply+reply-to-address@technosorcery.net'
-  html_email: true
-  group_pull_request_updates: false
-  alert_on_close: false
-  opened_subject: 'New pull requests'
-jhelwig/Ruby-GitHub-Pull-Request-Bot: {}
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => './this-is-the-template-dir',
+            'state_dir'                  => './this-is-the-state-dir',
+            'to_email_address'           => 'noreply+to-address@technosorcery.net',
+            'from_email_address'         => 'noreply+from-address@technosorcery.net',
+            'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+            'html_email'                 => true,
+            'group_pull_request_updates' => false,
+            'alert_on_close'             => false,
+            'opened_subject'             => 'New pull requests',
+          },
+          'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+        })
 
         bot = PullRequestBot.new
         bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['template_dir'].should == './this-is-the-template-dir'
       end
 
       it 'should be individually overrideable' do
-        write_config <<-HERE
----
-default:
-  template_dir: './this-is-the-template-dir'
-  state_dir: './this-is-the-state-dir'
-  to_email_address: 'noreply+to-address@technosorcery.net'
-  from_email_address: 'noreply+from-address@technosorcery.net'
-  reply_to_email_address: 'noreply+reply-to-address@technosorcery.net'
-  html_email: true
-  group_pull_request_updates: false
-  alert_on_close: false
-  opened_subject: 'New pull requests'
-jhelwig/Ruby-GitHub-Pull-Request-Bot:
-  template_dir: './this-is-the-overridden-template-dir'
-        HERE
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => './this-is-the-template-dir',
+            'state_dir'                  => './this-is-the-state-dir',
+            'to_email_address'           => 'noreply+to-address@technosorcery.net',
+            'from_email_address'         => 'noreply+from-address@technosorcery.net',
+            'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+            'html_email'                 => true,
+            'group_pull_request_updates' => false,
+            'alert_on_close'             => false,
+            'opened_subject'             => 'New pull requests',
+          },
+          'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {
+            'template_dir' => './this-is-the-overridden-template-dir'
+          }
+        })
 
         bot = PullRequestBot.new
         bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['template_dir'].should == './this-is-the-overridden-template-dir'
@@ -364,20 +366,20 @@ jhelwig/Ruby-GitHub-Pull-Request-Bot:
       describe 'with a single configured repository' do
         before :each do
           @template_dir = File.join @config_dir, 'templates'
-          write_config <<-HERE
----
-default:
-  template_dir: '#{@template_dir}'
-  state_dir: './this-is-the-state-dir'
-  to_email_address: 'noreply+to-address@technosorcery.net'
-  from_email_address: 'noreply+from-address@technosorcery.net'
-  reply_to_email_address: 'noreply+reply-to-address@technosorcery.net'
-  html_email: false
-  group_pull_request_updates: false
-  alert_on_close: false
-  opened_subject: 'New pull request: {{title}}'
-jhelwig/Ruby-GitHub-Pull-Request-Bot: {}
-          HERE
+          write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => false,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => false,
+              'opened_subject'             => 'New pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+          })
 
           write_file 'templates/individual_opened.mustache', <<-HERE
 Please review the pull request #\{{number}}.
@@ -516,23 +518,25 @@ Ticket: https://projects.puppetlabs.com/issues/6614
 
       describe 'with multiple configured repositories' do
         before :each do
-          write_config <<-HERE
----
-default:
-  template_dir: './this-is-the-template-dir'
-  state_dir: './this-is-the-state-dir'
-  to_email_address: 'noreply+to-address@technosorcery.net'
-  from_email_address: 'noreply+from-address@technosorcery.net'
-  reply_to_email_address: 'noreply+reply-to-address@technosorcery.net'
-  html_email: false
-  group_pull_request_updates: false
-  alert_on_close: false
-  opened_subject: 'New pull requests'
-jhelwig/Ruby-GitHub-Pull-Request-Bot:
-  template_dir: './this-is-the-overridden-template-dir'
-jhelwig/technosorcery.net:
-  template_dir: './templates-technosorcery.net'
-          HERE
+          write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => false,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => false,
+              'opened_subject'             => 'New pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {
+              'template_dir' => './this-is-the-overridden-template-dir'
+            },
+            'jhelwig/technosorcery.net' => {
+              'template_dir' => './templates-technosorcery.net'
+            }
+          })
 
           @bot = PullRequestBot.new
         end
