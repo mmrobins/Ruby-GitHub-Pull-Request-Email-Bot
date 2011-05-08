@@ -1,3 +1,5 @@
 .*.sw?
 \#*\#
+.\#*
 .rvmrc
+.test-loop

@@ -1,5 +1,5 @@
---- 
-default: 
+---
+default:
   template_dir: ./templates
   state_dir: ./state
   to_email_address: noreply@technosorcery.net
@@ -22,7 +22,7 @@ default:
   opened_subject: "New pull request for {{repository_name}}: {{title}}"
   closed_subject: "Closed pull request {{repository_name}}: {{title}}"
 
-jhelwig/Ruby-GitHub-Pull-Request-Bot: 
+jhelwig/Ruby-GitHub-Pull-Request-Bot:
   # You can override the template_dir on a per-repository basis by
   # specifying it in the section for that repository.
   template_dir: ./templates-github-pull-request-bot

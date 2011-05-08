@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'pull_request_bot'
+
+PullRequestBot.new.run
