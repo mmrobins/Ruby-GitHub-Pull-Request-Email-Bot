@@ -356,6 +356,67 @@ jhelwig/Ruby-GitHub-Pull-Request-Bot:
         bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['state_dir'].should == './this-is-the-state-dir'
       end
     end
+
+    describe '#run' do
+      describe 'with a single configured repository' do
+        before :each do
+          write_config <<-HERE
+---
+default:
+  template_dir: './this-is-the-template-dir'
+  state_dir: './this-is-the-state-dir'
+  to_email_address: 'noreply+to-address@technosorcery.net'
+  from_email_address: 'noreply+from-address@technosorcery.net'
+  reply_to_email_address: 'noreply+reply-to-address@technosorcery.net'
+  html_email: true
+  group_pull_request_updates: false
+  alert_on_close: false
+  opened_subject: 'New pull requests'
+jhelwig/Ruby-GitHub-Pull-Request-Bot:
+  template_dir: './this-is-the-overridden-template-dir'
+          HERE
+
+          @bot = PullRequestBot.new
+        end
+
+        it 'should request the list of open pull requests for the configured repository' do
+          PullRequestBot.any_instance.expects(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+
+          @bot.run
+        end
+      end
+
+      describe 'with multiple configured repositories' do
+        before :each do
+          write_config <<-HERE
+---
+default:
+  template_dir: './this-is-the-template-dir'
+  state_dir: './this-is-the-state-dir'
+  to_email_address: 'noreply+to-address@technosorcery.net'
+  from_email_address: 'noreply+from-address@technosorcery.net'
+  reply_to_email_address: 'noreply+reply-to-address@technosorcery.net'
+  html_email: true
+  group_pull_request_updates: false
+  alert_on_close: false
+  opened_subject: 'New pull requests'
+jhelwig/Ruby-GitHub-Pull-Request-Bot:
+  template_dir: './this-is-the-overridden-template-dir'
+jhelwig/technosorcery.net:
+  template_dir: './templates-technosorcery.net'
+          HERE
+
+          @bot = PullRequestBot.new
+        end
+
+        it 'should request the list of open pull requests for each configured repository' do
+          PullRequestBot.any_instance.expects(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+          PullRequestBot.any_instance.expects(:get).with('/pulls/jhelwig/technosorcery.net/open').returns({})
+
+          @bot.run
+        end
+      end
+    end
   end
 
   def write_config(contents)

@@ -3,6 +3,9 @@ require 'yaml'
 require 'httparty'
 
 class PullRequestBot
+  include HTTParty
+  base_uri 'https://github.com/api/v2/json'
+
   attr_accessor :opts, :config
 
   def initialize
@@ -15,6 +18,9 @@ class PullRequestBot
   end
 
   def run
+    repositories.each do |repository, settings|
+      handle_open_pull_requests(repository, settings)
+    end
   end
 
   def repositories
@@ -30,6 +36,11 @@ class PullRequestBot
   end
 
   private
+
+  def handle_open_pull_requests(repository, settings)
+    open_pull_requests = get("/pulls/#{repository}/open")["pulls"]
+    return unless open_pull_requests
+  end
 
   def read_config
     self.config = YAML.load(File.read(opts[:config]))

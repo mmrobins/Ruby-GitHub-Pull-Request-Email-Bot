@@ -15,6 +15,12 @@ multiple repositories.
 How do I get it up and running?
 -------------------------------
 
+Make sure you have the following gems installed:
+
+  * HTTParty
+
+Should be as simple as running `gem install httparty`.
+
 Copy `config.sample.yaml` to `config.yaml`, and edit to taste.
 
 Take a look at the templates in `templates`, and modify to suit your
