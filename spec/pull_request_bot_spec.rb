@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
 
 require 'spec_helper'
 
@@ -39,8 +40,8 @@ describe PullRequestBot do
   describe 'with a configuration file' do
     before :each do
       @config_dir = Dir.mktmpdir
-      @config_file = "#{@config_dir}/config.yaml"
-      ['-c', @config_file].each {|x| ARGV.push x}
+      @config_file = "config.yaml"
+      ['-c', File.join(@config_dir, @config_file)].each {|x| ARGV.push x}
     end
 
     after :each do
@@ -477,6 +478,12 @@ jhelwig/technosorcery.net:
   end
 
   def write_config(contents)
-    File.open(@config_file, 'w') {|f| f.write contents}
+    write_file @config_file, contents
+  end
+
+  def write_file(path, contents)
+    full_path = File.join @config_dir, path
+    FileUtils.mkdir_p(File.dirname(full_path))
+    File.open(full_path, 'w') {|f| f.write contents}
   end
 end
