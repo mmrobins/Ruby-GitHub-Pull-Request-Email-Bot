@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'httparty'
+require 'mustache'
 require 'pony'
 require 'trollop'
 require 'yaml'
@@ -49,7 +50,7 @@ class PullRequestBot
         :from      => settings["from_email_address"],
         :headers   => { 'Reply-To' => settings["reply_to_email_address"] },
         :html_body => request['html_url'],
-        :subject   => settings['opened_subject']
+        :subject   => Mustache.render(settings['opened_subject'], request)
       )
     end
   end

@@ -18,9 +18,10 @@ How do I get it up and running?
 Make sure you have the following gems installed:
 
   * HTTParty
+  * Mustache
   * Pony
 
-Should be as simple as running `gem install httparty pony`.
+Should be as simple as running `gem install httparty mustache pony`.
 
 Copy `config.sample.yaml` to `config.yaml`, and edit to taste.
 

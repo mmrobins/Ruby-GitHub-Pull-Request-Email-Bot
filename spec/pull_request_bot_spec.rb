@@ -409,7 +409,7 @@ jhelwig/Ruby-GitHub-Pull-Request-Bot:
               :from      => 'noreply+from-address@technosorcery.net',
               :headers   => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
               :html_body => 'https://github.com/benprew/pony/pull/2',
-              :subject   => 'New pull request: {{title}}'
+              :subject   => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
             ).returns nil
 
             @bot.run
@@ -428,14 +428,14 @@ jhelwig/Ruby-GitHub-Pull-Request-Bot:
               :from      => 'noreply+from-address@technosorcery.net',
               :headers   => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
               :html_body => 'https://github.com/puppetlabs/facter/pull/8',
-              :subject   => 'New pull request: {{title}}'
+              :subject   => 'New pull request: Please pull virtualbox support for the virtual fact'
             ).returns nil
             Pony.expects(:mail).once.with(
               :to        => 'noreply+to-address@technosorcery.net',
               :from      => 'noreply+from-address@technosorcery.net',
               :headers   => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
               :html_body => 'https://github.com/puppetlabs/facter/pull/6',
-              :subject   => 'New pull request: {{title}}'
+              :subject   => 'New pull request: Ruby 1.9 fixes.'
             ).returns nil
 
             @bot.run
