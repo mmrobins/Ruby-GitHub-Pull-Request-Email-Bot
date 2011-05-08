@@ -312,7 +312,8 @@ describe PullRequestBot do
         })
 
         lambda { PullRequestBot.new }.should raise_error(
-          ArgumentError, /Repositories must be of the form 'user-name\/repository-name': not-a-valid-repository-section/
+          ArgumentError,
+          /Repositories must be of the form 'user-name\/repository-name': not-a-valid-repository-section/
         )
       end
     end
@@ -335,7 +336,8 @@ describe PullRequestBot do
         })
 
         bot = PullRequestBot.new
-        bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['template_dir'].should == './this-is-the-template-dir'
+        bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['template_dir'].
+          should == './this-is-the-template-dir'
       end
 
       it 'should be individually overrideable' do
@@ -357,8 +359,10 @@ describe PullRequestBot do
         })
 
         bot = PullRequestBot.new
-        bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['template_dir'].should == './this-is-the-overridden-template-dir'
-        bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['state_dir'].should == './this-is-the-state-dir'
+        bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['template_dir'].
+          should == './this-is-the-overridden-template-dir'
+        bot.repositories['jhelwig/Ruby-GitHub-Pull-Request-Bot']['state_dir'].
+          should == './this-is-the-state-dir'
       end
     end
 
@@ -401,7 +405,8 @@ Description:
         end
 
         it 'should request the list of open pull requests for the configured repository' do
-          PullRequestBot.any_instance.expects(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+          PullRequestBot.any_instance.expects(:get).
+            with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
 
           @bot.run
         end
@@ -489,8 +494,10 @@ Description:
         end
 
         it 'should request the list of open pull requests for each configured repository' do
-          PullRequestBot.any_instance.expects(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
-          PullRequestBot.any_instance.expects(:get).with('/pulls/jhelwig/technosorcery.net/open').returns({})
+          PullRequestBot.any_instance.expects(:get).
+            with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+          PullRequestBot.any_instance.expects(:get).
+            with('/pulls/jhelwig/technosorcery.net/open').returns({})
 
           @bot.run
         end
