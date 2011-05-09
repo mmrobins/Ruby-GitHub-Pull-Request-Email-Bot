@@ -406,22 +406,24 @@ describe PullRequestBot do
         end
 
         describe 'with a single open pull request' do
-          before :each do
-            PullRequestBot.any_instance.stubs(:get).returns(
-              JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
-            )
-          end
+          describe 'configured to send plain-text messages' do
+            before :each do
+              PullRequestBot.any_instance.stubs(:get).returns(
+                JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+                )
+            end
 
-          it 'should send a single message' do
-            Pony.expects(:mail).once.with(
-              :to      => 'noreply+to-address@technosorcery.net',
-              :from    => 'noreply+from-address@technosorcery.net',
-              :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
-              :body    => read_fixture('json/single_repo_single_open_pull_request/individual/body.txt'),
-              :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
-            ).returns nil
+            it 'should send a single message' do
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/single_repo_single_open_pull_request/individual/body.txt'),
+                :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+              ).returns nil
 
-            @bot.run
+              @bot.run
+            end
           end
         end
 
@@ -432,29 +434,34 @@ describe PullRequestBot do
             )
           end
 
-          it 'should send one message per open pull request' do
-            Pony.expects(:mail).once.with(
-              :to      => 'noreply+to-address@technosorcery.net',
-              :from    => 'noreply+from-address@technosorcery.net',
-              :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
-              :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_eight_body.txt'),
-              :subject => 'New pull request: Please pull virtualbox support for the virtual fact'
-            ).returns nil
-            Pony.expects(:mail).once.with(
-              :to      => 'noreply+to-address@technosorcery.net',
-              :from    => 'noreply+from-address@technosorcery.net',
-              :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
-              :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_six_body.txt'),
-              :subject => 'New pull request: Ruby 1.9 fixes.'
-            ).returns nil
+          describe "configured to send plain-text messages" do
+            it 'should send one message per open pull request' do
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_eight_body.txt'),
+                :subject => 'New pull request: Please pull virtualbox support for the virtual fact'
+              ).returns nil
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_six_body.txt'),
+                :subject => 'New pull request: Ruby 1.9 fixes.'
+              ).returns nil
 
-            @bot.run
+              @bot.run
+            end
           end
         end
       end
 
       describe 'with multiple configured repositories' do
         before :each do
+          @template_dir = File.join @config_dir, 'templates'
+          populate_template_dir(@template_dir, 'text')
+
           write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
@@ -467,12 +474,8 @@ describe PullRequestBot do
               'alert_on_close'             => false,
               'opened_subject'             => 'New pull request: {{title}}',
             },
-            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {
-              'template_dir' => './this-is-the-overridden-template-dir'
-            },
-            'jhelwig/technosorcery.net' => {
-              'template_dir' => './templates-technosorcery.net'
-            }
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => { },
+            'jhelwig/technosorcery.net'            => { }
           })
 
           @bot = PullRequestBot.new
@@ -485,6 +488,93 @@ describe PullRequestBot do
             with('/pulls/jhelwig/technosorcery.net/open').returns({})
 
           @bot.run
+        end
+
+        describe 'with no open pull requests' do
+          it 'should not send any mail' do
+            PullRequestBot.any_instance.stubs(:get).returns({})
+            Pony.expects(:mail).never
+
+            @bot.run
+          end
+        end
+
+        describe 'with a single open pull request' do
+          describe 'configured to send plain-text messages' do
+            before :each do
+              PullRequestBot.any_instance.expects(:get).
+                with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').
+                returns(JSON.parse(read_fixture('json/first_repo_single_open_pull_request.json')))
+              PullRequestBot.any_instance.expects(:get).
+                with('/pulls/jhelwig/technosorcery.net/open').
+                returns(JSON.parse(read_fixture('json/second_repo_single_open_pull_request.json')))
+            end
+
+            it 'should send a single message per repository' do
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/first_repo_single_open_pull_request/individual/body.txt'),
+                :subject => 'New pull request: Second pull request'
+              ).returns nil
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/second_repo_single_open_pull_request/individual/body.txt'),
+                :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+              ).returns nil
+
+              @bot.run
+            end
+          end
+        end
+
+        describe 'with multiple open pull requests' do
+          before :each do
+            PullRequestBot.any_instance.expects(:get).
+              with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').
+              returns(JSON.parse(read_fixture('json/first_repo_multiple_open_pull_requests.json')))
+            PullRequestBot.any_instance.expects(:get).
+              with('/pulls/jhelwig/technosorcery.net/open').
+              returns(JSON.parse(read_fixture('json/second_repo_multiple_open_pull_requests.json')))
+          end
+
+          describe "configured to send plain-text messages" do
+            it 'should send one message per open pull request' do
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/first_repo_multiple_open_pull_requests/individual/pull_eight_body.txt'),
+                :subject => 'New pull request: Please pull virtualbox support for the virtual fact'
+              ).returns nil
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/first_repo_multiple_open_pull_requests/individual/pull_six_body.txt'),
+                :subject => 'New pull request: Ruby 1.9 fixes.'
+              ).returns nil
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/second_repo_multiple_open_pull_requests/individual/pull_eight_body.txt'),
+                :subject => 'New pull request: Repo 2 Pull 8'
+              ).returns nil
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/second_repo_multiple_open_pull_requests/individual/pull_six_body.txt'),
+                :subject => 'New pull request: Repo 2 Pull 6'
+              ).returns nil
+
+              @bot.run
+            end
+          end
         end
       end
     end
