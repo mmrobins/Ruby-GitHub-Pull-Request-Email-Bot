@@ -15,5 +15,6 @@ def read_fixture(file)
 end
 
 def populate_template_dir(template_dir, fixture_path)
+  FileUtils.mkdir_p template_dir
   FileUtils.cp_r(File.join(File.dirname(__FILE__), 'fixtures', 'templates', fixture_path, '.'), template_dir)
 end
