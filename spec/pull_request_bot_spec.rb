@@ -390,7 +390,7 @@ describe PullRequestBot do
         end
 
         it 'should request the list of open pull requests for the configured repository' do
-          PullRequestBot.any_instance.expects(:get).
+          PullRequestBot.expects(:get).
             with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
 
           @bot.run
@@ -398,7 +398,7 @@ describe PullRequestBot do
 
         describe 'with no open pull requests' do
           it 'should not send any mail' do
-            PullRequestBot.any_instance.stubs(:get).returns({})
+            PullRequestBot.stubs(:get).returns({})
             Pony.expects(:mail).never
 
             @bot.run
@@ -408,7 +408,7 @@ describe PullRequestBot do
         describe 'with a single open pull request' do
           describe 'configured to send plain-text messages' do
             before :each do
-              PullRequestBot.any_instance.stubs(:get).returns(
+              PullRequestBot.stubs(:get).returns(
                 JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
                 )
             end
@@ -429,7 +429,7 @@ describe PullRequestBot do
 
         describe 'with multiple open pull requests' do
           before :each do
-            PullRequestBot.any_instance.stubs(:get).returns(
+            PullRequestBot.stubs(:get).returns(
               JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json'))
             )
           end
@@ -482,9 +482,9 @@ describe PullRequestBot do
         end
 
         it 'should request the list of open pull requests for each configured repository' do
-          PullRequestBot.any_instance.expects(:get).
+          PullRequestBot.expects(:get).
             with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
-          PullRequestBot.any_instance.expects(:get).
+          PullRequestBot.expects(:get).
             with('/pulls/jhelwig/technosorcery.net/open').returns({})
 
           @bot.run
@@ -492,7 +492,7 @@ describe PullRequestBot do
 
         describe 'with no open pull requests' do
           it 'should not send any mail' do
-            PullRequestBot.any_instance.stubs(:get).returns({})
+            PullRequestBot.stubs(:get).returns({})
             Pony.expects(:mail).never
 
             @bot.run
@@ -502,10 +502,10 @@ describe PullRequestBot do
         describe 'with a single open pull request' do
           describe 'configured to send plain-text messages' do
             before :each do
-              PullRequestBot.any_instance.expects(:get).
+              PullRequestBot.expects(:get).
                 with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').
                 returns(JSON.parse(read_fixture('json/first_repo_single_open_pull_request.json')))
-              PullRequestBot.any_instance.expects(:get).
+              PullRequestBot.expects(:get).
                 with('/pulls/jhelwig/technosorcery.net/open').
                 returns(JSON.parse(read_fixture('json/second_repo_single_open_pull_request.json')))
             end
@@ -533,10 +533,10 @@ describe PullRequestBot do
 
         describe 'with multiple open pull requests' do
           before :each do
-            PullRequestBot.any_instance.expects(:get).
+            PullRequestBot.expects(:get).
               with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').
               returns(JSON.parse(read_fixture('json/first_repo_multiple_open_pull_requests.json')))
-            PullRequestBot.any_instance.expects(:get).
+            PullRequestBot.expects(:get).
               with('/pulls/jhelwig/technosorcery.net/open').
               returns(JSON.parse(read_fixture('json/second_repo_multiple_open_pull_requests.json')))
           end

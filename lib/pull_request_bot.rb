@@ -41,7 +41,7 @@ class PullRequestBot
   private
 
   def handle_pull_requests(repository, settings, status)
-    pull_requests = get("/pulls/#{repository}/#{status}")["pulls"]
+    pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")["pulls"]
     return unless pull_requests
 
     pull_requests.each do |request|
