@@ -1,0 +1,8 @@
+Greetings!
+
+The following pull requests have been opened:
+  https://github.com/puppetlabs/facter2/pull/8: Repo 2 Pull 8 opened by Ramon van Alteren (ramonvanalteren)
+  https://github.com/puppetlabs/facter2/pull/6: Repo 2 Pull 6 opened by Mauro Pompilio (malditogeek)
+
+Thanks!
+The Pull Request Bot

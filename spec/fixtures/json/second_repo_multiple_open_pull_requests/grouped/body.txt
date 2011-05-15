@@ -1,0 +1,8 @@
+Greetings!
+
+The following pull requests have been opened:
+  https://github.com/puppetlabs/facter/pull/8: Please pull virtualbox support for the virtual fact opened by Ramon van Alteren (ramonvanalteren)
+  https://github.com/puppetlabs/facter/pull/6: Ruby 1.9 fixes. opened by Mauro Pompilio (malditogeek)
+
+Thanks!
+The Pull Request Bot

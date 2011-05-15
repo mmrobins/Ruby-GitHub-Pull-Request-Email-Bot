@@ -570,6 +570,45 @@ describe PullRequestBot do
 
               PullRequestBot.new.run
             end
+
+            describe "grouped per repository" do
+              before :each do
+                write_config YAML.dump({
+                  'default' => {
+                    'template_dir'               => @template_dir,
+                    'state_dir'                  => './this-is-the-state-dir',
+                    'to_email_address'           => 'noreply+to-address@technosorcery.net',
+                    'from_email_address'         => 'noreply+from-address@technosorcery.net',
+                    'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+                    'html_email'                 => false,
+                    'group_pull_request_updates' => true,
+                    'alert_on_close'             => false,
+                    'opened_subject'             => 'New pull requests: {{repository_name}}',
+                  },
+                  'jhelwig/Ruby-GitHub-Pull-Request-Bot' => { },
+                  'jhelwig/technosorcery.net'            => { }
+                })
+              end
+
+              it 'should send one message per repository' do
+                Pony.expects(:mail).once.with(
+                  :to      => 'noreply+to-address@technosorcery.net',
+                  :from    => 'noreply+from-address@technosorcery.net',
+                  :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                  :body    => read_fixture('json/first_repo_multiple_open_pull_requests/grouped/body.txt'),
+                  :subject => 'New pull requests: jhelwig/technosorcery.net'
+                ).returns nil
+                Pony.expects(:mail).once.with(
+                  :to      => 'noreply+to-address@technosorcery.net',
+                  :from    => 'noreply+from-address@technosorcery.net',
+                  :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                  :body    => read_fixture('json/second_repo_multiple_open_pull_requests/grouped/body.txt'),
+                  :subject => 'New pull requests: jhelwig/Ruby-GitHub-Pull-Request-Bot'
+                ).returns nil
+
+                PullRequestBot.new.run
+              end
+            end
           end
         end
       end

@@ -41,18 +41,26 @@ class PullRequestBot
   private
 
   def handle_pull_requests(repository, settings, status)
-    pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")["pulls"]
+    pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")
     return unless pull_requests
 
     Mustache.template_path = settings['template_dir']
 
     body_type = settings['html_email'] ? :html_body : :body
 
+    if settings['group_pull_request_updates']
+      template_prefix = 'group'
+      pull_requests = [pull_requests]
+    else
+      pull_requests = pull_requests["pulls"] || []
+      template_prefix = 'individual'
+    end
+
     pull_requests.each do |request|
       request.merge!('repository_name' => repository)
 
       body = Mustache.render(
-        File.read(File.join(settings['template_dir'], "individual_opened.mustache")),
+        File.read(File.join(settings['template_dir'], "#{template_prefix}_opened.mustache")),
         request
       )
       subject = Mustache.render(settings['opened_subject'], request)
