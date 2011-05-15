@@ -44,6 +44,8 @@ class PullRequestBot
     pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")["pulls"]
     return unless pull_requests
 
+    Mustache.template_path = settings['template_dir']
+
     pull_requests.each do |request|
       Pony.mail(
         :to      => settings["to_email_address"],

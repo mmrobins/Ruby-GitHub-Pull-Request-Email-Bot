@@ -578,6 +578,42 @@ describe PullRequestBot do
         end
       end
     end
+
+    describe 'templating' do
+      it 'should support template snippits relative to the template_dir setting' do
+        @template_dir = File.join(@config_dir, 'templates')
+        populate_template_dir(@template_dir, 'with_snippits')
+
+        write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => false,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => false,
+              'opened_subject'             => 'New pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+        })
+
+        PullRequestBot.stubs(:get).returns(
+          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        )
+
+        Pony.expects(:mail).once.with(
+          :to      => 'noreply+to-address@technosorcery.net',
+          :from    => 'noreply+from-address@technosorcery.net',
+          :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+          :body    => read_fixture('json/single_repo_single_open_pull_request/individual-snippit/body.txt'),
+          :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+        ).returns nil
+
+        PullRequestBot.new.run
+      end
+    end
   end
 
   def write_config(contents)
