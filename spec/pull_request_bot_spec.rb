@@ -410,7 +410,7 @@ describe PullRequestBot do
             before :each do
               PullRequestBot.stubs(:get).returns(
                 JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
-                )
+              )
             end
 
             it 'should send a single message' do
@@ -459,7 +459,7 @@ describe PullRequestBot do
 
       describe 'with multiple configured repositories' do
         before :each do
-          @template_dir = File.join @config_dir, 'templates'
+          @template_dir = File.join(@config_dir, 'templates')
           populate_template_dir(@template_dir, 'text')
 
           write_config YAML.dump({
