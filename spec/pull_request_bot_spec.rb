@@ -385,15 +385,13 @@ describe PullRequestBot do
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
           })
-
-          @bot = PullRequestBot.new
         end
 
         it 'should request the list of open pull requests for the configured repository' do
           PullRequestBot.expects(:get).
             with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
 
-          @bot.run
+          PullRequestBot.new.run
         end
 
         describe 'with no open pull requests' do
@@ -401,7 +399,7 @@ describe PullRequestBot do
             PullRequestBot.stubs(:get).returns({})
             Pony.expects(:mail).never
 
-            @bot.run
+            PullRequestBot.new.run
           end
         end
 
@@ -422,7 +420,7 @@ describe PullRequestBot do
                 :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
               ).returns nil
 
-              @bot.run
+              PullRequestBot.new.run
             end
           end
         end
@@ -451,7 +449,7 @@ describe PullRequestBot do
                 :subject => 'New pull request: Ruby 1.9 fixes.'
               ).returns nil
 
-              @bot.run
+              PullRequestBot.new.run
             end
           end
         end
@@ -477,8 +475,6 @@ describe PullRequestBot do
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => { },
             'jhelwig/technosorcery.net'            => { }
           })
-
-          @bot = PullRequestBot.new
         end
 
         it 'should request the list of open pull requests for each configured repository' do
@@ -487,7 +483,7 @@ describe PullRequestBot do
           PullRequestBot.expects(:get).
             with('/pulls/jhelwig/technosorcery.net/open').returns({})
 
-          @bot.run
+          PullRequestBot.new.run
         end
 
         describe 'with no open pull requests' do
@@ -495,7 +491,7 @@ describe PullRequestBot do
             PullRequestBot.stubs(:get).returns({})
             Pony.expects(:mail).never
 
-            @bot.run
+            PullRequestBot.new.run
           end
         end
 
@@ -526,7 +522,7 @@ describe PullRequestBot do
                 :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
               ).returns nil
 
-              @bot.run
+              PullRequestBot.new.run
             end
           end
         end
@@ -572,7 +568,7 @@ describe PullRequestBot do
                 :subject => 'New pull request: Repo 2 Pull 6'
               ).returns nil
 
-              @bot.run
+              PullRequestBot.new.run
             end
           end
         end
