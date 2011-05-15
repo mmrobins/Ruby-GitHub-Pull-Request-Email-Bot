@@ -613,6 +613,74 @@ describe PullRequestBot do
 
         PullRequestBot.new.run
       end
+
+      it 'should support sending email with HTML body' do
+        @template_dir = File.join(@config_dir, 'templates')
+        populate_template_dir(@template_dir, 'html')
+
+        write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => true,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => false,
+              'opened_subject'             => 'New pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+        })
+
+        PullRequestBot.stubs(:get).returns(
+          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        )
+
+        Pony.expects(:mail).once.with(
+          :to        => 'noreply+to-address@technosorcery.net',
+          :from      => 'noreply+from-address@technosorcery.net',
+          :headers   => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+          :html_body => read_fixture('json/single_repo_single_open_pull_request/individual/body.html'),
+          :subject   => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+        ).returns nil
+
+        PullRequestBot.new.run
+      end
+
+      it 'should support sending email with text body' do
+        @template_dir = File.join(@config_dir, 'templates')
+        populate_template_dir(@template_dir, 'text')
+
+        write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => false,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => false,
+              'opened_subject'             => 'New pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+        })
+
+        PullRequestBot.stubs(:get).returns(
+          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        )
+
+        Pony.expects(:mail).once.with(
+          :to      => 'noreply+to-address@technosorcery.net',
+          :from    => 'noreply+from-address@technosorcery.net',
+          :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+          :body    => read_fixture('json/single_repo_single_open_pull_request/individual/body.txt'),
+          :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+        ).returns nil
+
+        PullRequestBot.new.run
+      end
     end
   end
 

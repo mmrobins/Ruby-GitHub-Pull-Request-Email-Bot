@@ -1,0 +1,35 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>Greetings!</p>
+
+    <p>Please review the pull request #{{number}}: <a href="{{html_url}}" title="{{title}}">{{title}}</a> opened by {{#user}}{{name}} ({{login}}){{/user}}.</p>
+
+    <p>Some more information about the pull request:<br />
+    <ul>
+      <li>Opened: {{created_at}}</li>
+      <li>Merges cleanly:
+      {{#mergeable}}
+        Yes
+      {{/mergeable}}
+      {{^mergeable}}
+        No
+      {{/mergeable}}
+      </li>
+      {{#base}}
+        <li>Based on: {{label}} ({{sha}})</li>
+      {{/base}}
+      {{#head}}
+        <li>Requested merge: {{label}} ({{sha}})</li>
+      {{/head}}
+    </ul></p>
+
+    <p>Description:<br />
+    <br />
+    {{body}}</p>
+
+    <p>Thanks!<br />
+    The Pull Request Bot</p>
+  </body>
+</html>
