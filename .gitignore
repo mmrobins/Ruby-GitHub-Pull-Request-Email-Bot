@@ -1,6 +1,10 @@
+# Temporary files
 .*.sw?
 \#*\#
 .\#*
+
+# Developer/user specicific files
+config.yaml
+.rspec
 .rvmrc
 .test-loop
-config.yaml
