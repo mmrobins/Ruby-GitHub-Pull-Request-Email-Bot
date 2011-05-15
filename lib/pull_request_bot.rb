@@ -49,6 +49,8 @@ class PullRequestBot
     body_type = settings['html_email'] ? :html_body : :body
 
     pull_requests.each do |request|
+      request.merge!('repository_name' => repository)
+
       Pony.mail(
         :to       => settings["to_email_address"],
         :from     => settings["from_email_address"],

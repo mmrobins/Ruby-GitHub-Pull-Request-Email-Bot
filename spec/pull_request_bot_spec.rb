@@ -681,6 +681,37 @@ describe PullRequestBot do
 
         PullRequestBot.new.run
       end
+
+      it 'should send the repository_name to the template' do
+        @template_dir = File.join(@config_dir, 'templates')
+        populate_template_dir(@template_dir, 'text')
+
+        write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => false,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => false,
+              'opened_subject'             => 'New pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+        })
+
+        PullRequestBot.stubs(:get).returns(
+          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        )
+        Pony.stubs(:mail)
+        Mustache.expects(:render).at_least_once.with do |template, request|
+          request.should have_key('repository_name')
+          request['repository_name'].should == 'jhelwig/Ruby-GitHub-Pull-Request-Bot'
+        end
+
+        PullRequestBot.new.run
+      end
     end
   end
 
