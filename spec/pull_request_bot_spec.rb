@@ -66,7 +66,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -86,7 +86,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -106,7 +106,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -126,7 +126,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -146,7 +146,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -166,7 +166,7 @@ describe PullRequestBot do
             'reply_to_email_address'     => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -186,7 +186,7 @@ describe PullRequestBot do
             'reply_to_email_address'     => '',
             'html_email'                 => '',
             'alert_on_close'             => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -206,7 +206,7 @@ describe PullRequestBot do
             'reply_to_email_address'     => '',
             'html_email'                 => '',
             'group_pull_request_updates' => '',
-            'opened_subject'             => '',
+            'open_subject'               => '',
             'closed_subject'             => ''
           }
         })
@@ -216,7 +216,7 @@ describe PullRequestBot do
         )
       end
 
-      it 'should require a default opened_subject' do
+      it 'should require a default open_subject' do
         write_config YAML.dump({
           'default' => {
             'template_dir'               => '',
@@ -232,7 +232,7 @@ describe PullRequestBot do
         })
 
         lambda { PullRequestBot.new }.should raise_error(
-          ArgumentError, /'default' section must contain 'opened_subject'/
+          ArgumentError, /'default' section must contain 'open_subject'/
         )
       end
 
@@ -247,7 +247,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => true,
-            'opened_subject'             => '',
+            'open_subject'               => '',
           }
         })
 
@@ -267,7 +267,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => false,
-            'opened_subject'             => '',
+            'open_subject'               => '',
           },
           'jhelwig/Ruby-GitHub-Pull-Request-Bot' =>  {}
         })
@@ -286,7 +286,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => false,
-            'opened_subject'             => '',
+            'open_subject'               => '',
           },
         })
 
@@ -306,7 +306,7 @@ describe PullRequestBot do
             'html_email'                 => '',
             'group_pull_request_updates' => '',
             'alert_on_close'             => false,
-            'opened_subject'             => '',
+            'open_subject'               => '',
           },
           'not-a-valid-repository-section' =>  {}
         })
@@ -330,7 +330,7 @@ describe PullRequestBot do
             'html_email'                 => true,
             'group_pull_request_updates' => false,
             'alert_on_close'             => false,
-            'opened_subject'             => 'New pull requests',
+            'open_subject'               => 'New pull requests',
           },
           'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
@@ -351,7 +351,7 @@ describe PullRequestBot do
             'html_email'                 => true,
             'group_pull_request_updates' => false,
             'alert_on_close'             => false,
-            'opened_subject'             => 'New pull requests',
+            'open_subject'               => 'New pull requests',
           },
           'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {
             'template_dir' => './this-is-the-overridden-template-dir'
@@ -381,7 +381,7 @@ describe PullRequestBot do
               'html_email'                 => false,
               'group_pull_request_updates' => false,
               'alert_on_close'             => false,
-              'opened_subject'             => 'New pull request: {{title}}',
+              'open_subject'               => 'New pull request: {{title}}',
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
           })
@@ -470,7 +470,7 @@ describe PullRequestBot do
               'html_email'                 => false,
               'group_pull_request_updates' => false,
               'alert_on_close'             => false,
-              'opened_subject'             => 'New pull request: {{title}}',
+              'open_subject'               => 'New pull request: {{title}}',
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => { },
             'jhelwig/technosorcery.net'            => { }
@@ -583,7 +583,7 @@ describe PullRequestBot do
                     'html_email'                 => false,
                     'group_pull_request_updates' => true,
                     'alert_on_close'             => false,
-                    'opened_subject'             => 'New pull requests: {{repository_name}}',
+                    'open_subject'               => 'New pull requests: {{repository_name}}',
                   },
                   'jhelwig/Ruby-GitHub-Pull-Request-Bot' => { },
                   'jhelwig/technosorcery.net'            => { }
@@ -629,7 +629,7 @@ describe PullRequestBot do
               'html_email'                 => false,
               'group_pull_request_updates' => false,
               'alert_on_close'             => false,
-              'opened_subject'             => 'New pull request: {{title}}',
+              'open_subject'               => 'New pull request: {{title}}',
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
@@ -663,7 +663,7 @@ describe PullRequestBot do
               'html_email'                 => true,
               'group_pull_request_updates' => false,
               'alert_on_close'             => false,
-              'opened_subject'             => 'New pull request: {{title}}',
+              'open_subject'               => 'New pull request: {{title}}',
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
@@ -697,7 +697,7 @@ describe PullRequestBot do
               'html_email'                 => false,
               'group_pull_request_updates' => false,
               'alert_on_close'             => false,
-              'opened_subject'             => 'New pull request: {{title}}',
+              'open_subject'               => 'New pull request: {{title}}',
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
@@ -731,7 +731,7 @@ describe PullRequestBot do
               'html_email'                 => false,
               'group_pull_request_updates' => false,
               'alert_on_close'             => false,
-              'opened_subject'             => 'New pull request: {{title}}',
+              'open_subject'               => 'New pull request: {{title}}',
             },
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })

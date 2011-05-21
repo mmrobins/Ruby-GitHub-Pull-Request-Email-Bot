@@ -60,10 +60,10 @@ class PullRequestBot
       request.merge!('repository_name' => repository)
 
       body = Mustache.render(
-        File.read(File.join(settings['template_dir'], "#{template_prefix}_opened.mustache")),
+        File.read(File.join(settings['template_dir'], "#{template_prefix}_open.mustache")),
         request
       )
-      subject = Mustache.render(settings['opened_subject'], request)
+      subject = Mustache.render(settings["open_subject"], request)
 
       Pony.mail(
         :to       => settings["to_email_address"],
@@ -94,7 +94,7 @@ class PullRequestBot
      html_email
      group_pull_request_updates
      alert_on_close
-     opened_subject
+     open_subject
     }.each do |key|
       raise ArgumentError.new("In '#{opts[:config]}' the 'default' section must contain '#{key}'") unless
         config['default'].has_key?(key)
