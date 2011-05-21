@@ -1,0 +1,10 @@
+Greetings!
+
+On 2010-09-15T03:44:12Z pull request #1 was closed by chromatic (chromatic).
+
+Capture Diagnostic Information from Failing Tests
+
+https://github.com/puppetlabs/puppet-acceptance/pull/1
+
+Thanks!
+The Pull Request Bot

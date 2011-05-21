@@ -455,6 +455,118 @@ describe PullRequestBot do
         end
       end
 
+      describe 'configured to notify on closed pull requests' do
+        before :each do
+          @template_dir = File.join @config_dir, 'templates'
+          populate_template_dir(@template_dir, 'text')
+          write_config YAML.dump({
+            'default' => {
+              'template_dir'               => @template_dir,
+              'state_dir'                  => './this-is-the-state-dir',
+              'to_email_address'           => 'noreply+to-address@technosorcery.net',
+              'from_email_address'         => 'noreply+from-address@technosorcery.net',
+              'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+              'html_email'                 => false,
+              'group_pull_request_updates' => false,
+              'alert_on_close'             => true,
+              'open_subject'               => 'New pull request: {{title}}',
+              'closed_subject'             => 'Closed pull request: {{title}}',
+            },
+            'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+          })
+        end
+
+        describe 'with no closed pull requests' do
+          it 'should not send any mail' do
+            PullRequestBot.stubs(:get).returns({})
+            Pony.expects(:mail).never
+
+            PullRequestBot.new.run
+          end
+        end
+
+        describe 'with a single closed pull request' do
+          before :each do
+            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
+              JSON.parse(read_fixture('json/single_repo_single_closed_pull_request.json'))
+            )
+          end
+
+          it 'should send a single message' do
+            Pony.expects(:mail).once.with(
+              :to      => 'noreply+to-address@technosorcery.net',
+              :from    => 'noreply+from-address@technosorcery.net',
+              :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+              :body    => read_fixture('json/single_repo_single_closed_pull_request/individual/body.txt'),
+              :subject => 'Closed pull request: Determine home directory using $HOME instead of /home/$USER'
+            ).returns nil
+
+            PullRequestBot.new.run
+          end
+        end
+
+        describe 'with multiple closed pull requests' do
+          before :each do
+            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
+              JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json'))
+            )
+          end
+
+          it 'should send one message per closed pull request' do
+            Pony.expects(:mail).once.with(
+              :to      => 'noreply+to-address@technosorcery.net',
+              :from    => 'noreply+from-address@technosorcery.net',
+              :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+              :body    => read_fixture('json/single_repo_multiple_closed_pull_requests/individual/body_one.txt'),
+              :subject => 'Closed pull request: Capture Diagnostic Information from Failing Tests'
+            ).returns nil
+            Pony.expects(:mail).once.with(
+              :to      => 'noreply+to-address@technosorcery.net',
+              :from    => 'noreply+from-address@technosorcery.net',
+              :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+              :body    => read_fixture('json/single_repo_multiple_closed_pull_requests/individual/body_two.txt'),
+              :subject => 'Closed pull request: New Test Runner to Produce XML Output for Hudson'
+            ).returns nil
+
+            PullRequestBot.new.run
+          end
+
+          describe 'grouped per repository' do
+            before :each do
+              write_config YAML.dump({
+                'default' => {
+                  'template_dir'               => @template_dir,
+                  'state_dir'                  => './this-is-the-state-dir',
+                  'to_email_address'           => 'noreply+to-address@technosorcery.net',
+                  'from_email_address'         => 'noreply+from-address@technosorcery.net',
+                  'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+                  'html_email'                 => false,
+                  'group_pull_request_updates' => true,
+                  'alert_on_close'             => true,
+                  'open_subject'               => 'New pull request: {{title}}',
+                  'closed_subject'             => 'Closed pull requests: {{repository_name}}',
+                },
+                'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+              })
+            end
+
+            it 'should send a single message' do
+              Pony.expects(:mail).once.with(
+                :to      => 'noreply+to-address@technosorcery.net',
+                :from    => 'noreply+from-address@technosorcery.net',
+                :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+                :body    => read_fixture('json/single_repo_multiple_closed_pull_requests/grouped/body.txt'),
+                :subject => 'Closed pull requests: jhelwig/Ruby-GitHub-Pull-Request-Bot'
+              ).returns nil
+
+              PullRequestBot.new.run
+            end
+          end
+        end
+      end
+
       describe 'with multiple configured repositories' do
         before :each do
           @template_dir = File.join(@config_dir, 'templates')

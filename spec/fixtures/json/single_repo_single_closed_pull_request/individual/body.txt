@@ -1,0 +1,10 @@
+Greetings!
+
+On 2011-05-03T14:47:01Z pull request #1 was closed by Jacob Helwig (jhelwig).
+
+Determine home directory using $HOME instead of /home/$USER
+
+https://github.com/vchudnov/desktop-autosave/pull/1
+
+Thanks!
+The Pull Request Bot

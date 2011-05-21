@@ -1,0 +1,10 @@
+Greetings!
+
+On 2011-05-20T16:52:59Z pull request #2 was closed by chromatic (chromatic).
+
+New Test Runner to Produce XML Output for Hudson
+
+https://github.com/puppetlabs/puppet-acceptance/pull/2
+
+Thanks!
+The Pull Request Bot

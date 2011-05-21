@@ -23,6 +23,7 @@ class PullRequestBot
   def run
     repositories.each do |repository, settings|
       handle_pull_requests(repository, settings, :open)
+      handle_pull_requests(repository, settings, :closed) if settings['alert_on_close']
     end
   end
 
@@ -60,10 +61,10 @@ class PullRequestBot
       request.merge!('repository_name' => repository)
 
       body = Mustache.render(
-        File.read(File.join(settings['template_dir'], "#{template_prefix}_open.mustache")),
+        File.read(File.join(settings['template_dir'], "#{template_prefix}_#{status}.mustache")),
         request
       )
-      subject = Mustache.render(settings["open_subject"], request)
+      subject = Mustache.render(settings["#{status}_subject"], request)
 
       Pony.mail(
         :to       => settings["to_email_address"],

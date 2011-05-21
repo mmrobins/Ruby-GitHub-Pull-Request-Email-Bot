@@ -1,0 +1,8 @@
+Greetings!
+
+The following pull requests have been closed:
+  https://github.com/puppetlabs/puppet-acceptance/pull/2: New Test Runner to Produce XML Output for Hudson requested by chromatic (chromatic)
+  https://github.com/puppetlabs/puppet-acceptance/pull/1: Capture Diagnostic Information from Failing Tests requested by chromatic (chromatic)
+
+Thanks!
+The Pull Request Bot
