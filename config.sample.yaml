@@ -8,17 +8,9 @@ default:
   html_email: false
   group_pull_request_updates: true
   alert_on_close: true
-  # Both opened_subject, and closed_subject are rendered using Mustache
-  # and provided the following information:
-  #
-  # {
-  #   "repository_name": "technosorcery.net"
-  #   "title": "Here's a new blog post!",
-  #   "user": {
-  #     "name": "Jacob Helwig",
-  #     "login": "jhelwig"
-  #   }
-  # }
+  # Both opened_subject, and closed_subject are rendered using
+  # Mustache and provided all of the same information as the body
+  # template, along with the repository's name as 'repository_name'.
   opened_subject: "New pull request for {{repository_name}}: {{title}}"
   closed_subject: "Closed pull request {{repository_name}}: {{title}}"
 
