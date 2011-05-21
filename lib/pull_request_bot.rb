@@ -43,7 +43,7 @@ class PullRequestBot
 
   def handle_pull_requests(repository, settings, status)
     pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")
-    return unless pull_requests
+    return unless pull_requests.has_key?('pulls') and not pull_requests['pulls'].empty?
 
     Mustache.template_path = settings['template_dir']
 
@@ -54,7 +54,7 @@ class PullRequestBot
       pull_requests = [pull_requests]
     else
       template_prefix = 'individual'
-      pull_requests = pull_requests["pulls"] || []
+      pull_requests = pull_requests["pulls"]
     end
 
     pull_requests.each do |request|

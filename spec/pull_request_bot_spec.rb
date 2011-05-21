@@ -508,7 +508,7 @@ describe PullRequestBot do
 
         describe 'with multiple closed pull requests' do
           before :each do
-            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({'pulls' => []})
             PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
               JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json'))
             )
