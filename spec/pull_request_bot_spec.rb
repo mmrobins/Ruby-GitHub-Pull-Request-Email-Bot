@@ -6,6 +6,7 @@ require 'json'
 
 describe PullRequestBot do
   before :each do
+    Pony.stubs(:mail)
     ARGV.clear
   end
 
@@ -851,7 +852,6 @@ describe PullRequestBot do
         PullRequestBot.stubs(:get).returns(
           JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
         )
-        Pony.stubs(:mail)
         Mustache.expects(:render).at_least_once.with do |template, request|
           request.should have_key('repository_name')
           request['repository_name'].should == 'jhelwig/Ruby-GitHub-Pull-Request-Bot'

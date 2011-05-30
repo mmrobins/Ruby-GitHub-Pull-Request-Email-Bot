@@ -54,7 +54,7 @@ class PullRequestBot
       pull_requests = [pull_requests]
     else
       template_prefix = 'individual'
-      pull_requests = pull_requests["pulls"]
+      pull_requests = pull_requests['pulls']
     end
 
     pull_requests.each do |request|
