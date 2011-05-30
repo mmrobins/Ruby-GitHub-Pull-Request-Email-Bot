@@ -5,6 +5,8 @@ require 'pony'
 require 'trollop'
 require 'yaml'
 
+require 'pull_request_bot/recorded_requests'
+
 class PullRequestBot
   include HTTParty
   base_uri 'https://github.com/api/v2/json'
@@ -22,8 +24,10 @@ class PullRequestBot
 
   def run
     repositories.each do |repository, settings|
-      handle_pull_requests(repository, settings, :open)
-      handle_pull_requests(repository, settings, :closed) if settings['alert_on_close']
+      recorded_requests = PullRequestBot::RecordedRequests.new(settings['state_dir'], repository)
+
+      handle_pull_requests(repository, settings, :open, recorded_requests)
+      handle_pull_requests(repository, settings, :closed, recorded_requests) if settings['alert_on_close']
     end
   end
 
@@ -41,13 +45,16 @@ class PullRequestBot
 
   private
 
-  def handle_pull_requests(repository, settings, status)
+  def handle_pull_requests(repository, settings, status, recorded_requests)
     pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")
-    return unless pull_requests.has_key?('pulls') and not pull_requests['pulls'].empty?
+    return unless pull_requests.has_key?('pulls')
 
     Mustache.template_path = settings['template_dir']
 
     body_type = settings['html_email'] ? :html_body : :body
+
+    pull_requests['pulls'] = filter_seen_requests(status, recorded_requests, pull_requests['pulls'])
+    return if pull_requests['pulls'].empty?
 
     if settings['group_pull_request_updates']
       template_prefix = 'group'
@@ -73,7 +80,24 @@ class PullRequestBot
         body_type => body,
         :subject  => subject
       )
+
+      record_pull_request(request, status, recorded_requests, settings)
     end
+  end
+
+  def filter_seen_requests(status, recorded_requests, pulls)
+    pulls.reject do |req|
+      recorded_requests.send("#{status}?".to_sym, req['number'])
+    end
+  end
+
+  def record_pull_request(request, state, recorded_requests, settings)
+    if request.has_key? 'pulls'
+      request['pulls'].each {|req| record_pull_request(req, state, recorded_requests, settings)}
+    end
+
+    method = state == :closed ? :close : state
+    recorded_requests.send(method, request['number'])
   end
 
   def read_config

@@ -371,11 +371,12 @@ describe PullRequestBot do
       describe 'with a single configured repository' do
         before :each do
           @template_dir = File.join @config_dir, 'templates'
+          @state_dir = File.join @config_dir, 'state'
           populate_template_dir(@template_dir, 'text')
           write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -459,11 +460,12 @@ describe PullRequestBot do
       describe 'configured to notify on closed pull requests' do
         before :each do
           @template_dir = File.join @config_dir, 'templates'
+          @state_dir = File.join @config_dir, 'state'
           populate_template_dir(@template_dir, 'text')
           write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -539,7 +541,7 @@ describe PullRequestBot do
               write_config YAML.dump({
                 'default' => {
                   'template_dir'               => @template_dir,
-                  'state_dir'                  => './this-is-the-state-dir',
+                  'state_dir'                  => @state_dir,
                   'to_email_address'           => 'noreply+to-address@technosorcery.net',
                   'from_email_address'         => 'noreply+from-address@technosorcery.net',
                   'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -571,12 +573,13 @@ describe PullRequestBot do
       describe 'with multiple configured repositories' do
         before :each do
           @template_dir = File.join(@config_dir, 'templates')
+          @state_dir = File.join @config_dir, 'state'
           populate_template_dir(@template_dir, 'text')
 
           write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -689,7 +692,7 @@ describe PullRequestBot do
                 write_config YAML.dump({
                   'default' => {
                     'template_dir'               => @template_dir,
-                    'state_dir'                  => './this-is-the-state-dir',
+                    'state_dir'                  => @state_dir,
                     'to_email_address'           => 'noreply+to-address@technosorcery.net',
                     'from_email_address'         => 'noreply+from-address@technosorcery.net',
                     'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -727,15 +730,155 @@ describe PullRequestBot do
       end
     end
 
+    describe 'maintaining state' do
+      before :each do
+        @template_dir = File.join @config_dir, 'templates'
+        @state_dir = File.join @config_dir, 'state'
+        populate_template_dir(@template_dir, 'text')
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => @template_dir,
+            'state_dir'                  => @state_dir,
+            'to_email_address'           => 'noreply+to-address@technosorcery.net',
+            'from_email_address'         => 'noreply+from-address@technosorcery.net',
+            'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+            'html_email'                 => false,
+            'group_pull_request_updates' => false,
+            'alert_on_close'             => true,
+            'open_subject'               => 'New pull request: {{title}}',
+            'closed_subject'             => 'Closed pull request: {{title}}',
+          },
+          'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+        })
+      end
+
+      describe 'with open pull requests' do
+        before :each do
+          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns({'pulls' => []})
+          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns(
+            JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json'))
+          )
+
+          PullRequestBot::RecordedRequests.any_instance.stubs(:open?).with(6).returns(true)
+          PullRequestBot::RecordedRequests.any_instance.stubs(:open?).with(8).returns(false)
+        end
+
+        it 'should only notify the first time the pull request is seen' do
+          Pony.expects(:mail).with(
+            :from    => 'noreply+from-address@technosorcery.net',
+            :headers => {'Reply-To' => 'noreply+reply-to-address@technosorcery.net'},
+            :to      => 'noreply+to-address@technosorcery.net',
+            :body    => read_fixture('json/single_repo_multiple_open_pull_requests/individual/pull_eight_body.txt'),
+            :subject => 'New pull request: Please pull virtualbox support for the virtual fact'
+          )
+
+          PullRequestBot.new.run
+        end
+
+        it 'should record the notifications that are sent' do
+          PullRequestBot::RecordedRequests.any_instance.expects(:open).with(8)
+
+          PullRequestBot.new.run
+        end
+
+        describe 'grouping pull requests' do
+          before :each do
+            write_config YAML.dump({
+              'default' => {
+                'template_dir'               => @template_dir,
+                'state_dir'                  => @state_dir,
+                'to_email_address'           => 'noreply+to-address@technosorcery.net',
+                'from_email_address'         => 'noreply+from-address@technosorcery.net',
+                'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+                'html_email'                 => false,
+                'group_pull_request_updates' => true,
+                'alert_on_close'             => true,
+                'open_subject'               => 'New pull request: {{repository_name}}',
+                'closed_subject'             => 'Closed pull request: {{repository_name}}',
+              },
+              'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+            })
+          end
+
+          it 'should not notify when all requests have already been seen' do
+            PullRequestBot::RecordedRequests.any_instance.stubs(:open?).with(8).returns(true)
+
+            Pony.expects(:mail).never
+
+            PullRequestBot.new.run
+          end
+        end
+      end
+
+      describe 'with closed pull requests' do
+        before :each do
+          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({'pulls' => []})
+          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
+            JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json'))
+          )
+
+          PullRequestBot::RecordedRequests.any_instance.stubs(:closed?).with(1).returns(false)
+          PullRequestBot::RecordedRequests.any_instance.stubs(:closed?).with(2).returns(true)
+        end
+
+        it 'should only notify the first time the pull request is seen' do
+          Pony.expects(:mail).once.with(
+            :to      => 'noreply+to-address@technosorcery.net',
+            :from    => 'noreply+from-address@technosorcery.net',
+            :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
+            :body    => read_fixture('json/single_repo_multiple_closed_pull_requests/individual/body_one.txt'),
+            :subject => 'Closed pull request: Capture Diagnostic Information from Failing Tests'
+          ).returns nil
+
+          PullRequestBot.new.run
+        end
+
+        it 'should record the notifications that are sent' do
+          PullRequestBot::RecordedRequests.any_instance.expects(:close).with(1)
+
+          PullRequestBot.new.run
+        end
+
+        describe 'grouping pull requests' do
+          before :each do
+            write_config YAML.dump({
+              'default' => {
+                'template_dir'               => @template_dir,
+                'state_dir'                  => @state_dir,
+                'to_email_address'           => 'noreply+to-address@technosorcery.net',
+                'from_email_address'         => 'noreply+from-address@technosorcery.net',
+                'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
+                'html_email'                 => false,
+                'group_pull_request_updates' => true,
+                'alert_on_close'             => true,
+                'open_subject'               => 'New pull request: {{repository_name}}',
+                'closed_subject'             => 'Closed pull request: {{repository_name}}',
+              },
+              'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
+            })
+          end
+
+          it 'should not notify when all requests have already been seen' do
+            PullRequestBot::RecordedRequests.any_instance.stubs(:closed?).with(1).returns(true)
+
+            Pony.expects(:mail).never
+
+            PullRequestBot.new.run
+          end
+        end
+      end
+    end
+
     describe 'templating' do
       it 'should support template snippits relative to the template_dir setting' do
         @template_dir = File.join(@config_dir, 'templates')
+        @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'with_snippits')
 
         write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -764,12 +907,13 @@ describe PullRequestBot do
 
       it 'should support sending email with HTML body' do
         @template_dir = File.join(@config_dir, 'templates')
+        @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'html')
 
         write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -798,12 +942,13 @@ describe PullRequestBot do
 
       it 'should support sending email with text body' do
         @template_dir = File.join(@config_dir, 'templates')
+        @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'text')
 
         write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',
@@ -832,12 +977,13 @@ describe PullRequestBot do
 
       it 'should send the repository_name to the template' do
         @template_dir = File.join(@config_dir, 'templates')
+        @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'text')
 
         write_config YAML.dump({
             'default' => {
               'template_dir'               => @template_dir,
-              'state_dir'                  => './this-is-the-state-dir',
+              'state_dir'                  => @state_dir,
               'to_email_address'           => 'noreply+to-address@technosorcery.net',
               'from_email_address'         => 'noreply+from-address@technosorcery.net',
               'reply_to_email_address'     => 'noreply+reply-to-address@technosorcery.net',

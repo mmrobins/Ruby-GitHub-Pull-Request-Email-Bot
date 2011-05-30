@@ -5,6 +5,7 @@
 
 # Developer/user specicific files
 config.yaml
+state/
 .rspec
 .rvmrc
 .test-loop
