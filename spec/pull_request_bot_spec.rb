@@ -61,7 +61,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default template_dir' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'state_dir'                  => '',
             'to_email_address'           => '',
@@ -81,7 +81,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default state_dir' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'to_email_address'           => '',
@@ -101,7 +101,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default to_email_address' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -121,7 +121,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default from_email_address' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -141,7 +141,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default reply_to_email_address' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -161,7 +161,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default html_email' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -181,7 +181,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default group_pull_request_updates' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -201,7 +201,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default alert_on_close' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -221,7 +221,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default open_subject' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -241,7 +241,7 @@ describe PullRequestBot do
       end
 
       it 'should require a default closed_subject when alert_on_close is true' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -261,7 +261,7 @@ describe PullRequestBot do
       end
 
       it 'should not require a default closed_subject when alert_on_close is false' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -280,7 +280,7 @@ describe PullRequestBot do
       end
 
       it 'should require a repository section' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -301,7 +301,7 @@ describe PullRequestBot do
 
       it "should require a repository section to be in the form 'user-name/repository-name'" do
         invalid_repo_name = '@#$%^&invalid-user/invalid-repository#$%^'
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -323,7 +323,7 @@ describe PullRequestBot do
       end
 
       it "should not allow more than one '/' in repository or user sections" do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -345,7 +345,7 @@ describe PullRequestBot do
       end
 
       it "should allow '.' in repository names" do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -364,7 +364,7 @@ describe PullRequestBot do
       end
 
       it "should specifying only the account owner" do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => '',
             'state_dir'                  => '',
@@ -385,7 +385,7 @@ describe PullRequestBot do
 
     describe 'repository settings' do
       it 'should inherit from the default section' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => './this-is-the-template-dir',
             'state_dir'                  => './this-is-the-state-dir',
@@ -406,7 +406,7 @@ describe PullRequestBot do
       end
 
       it 'should be individually overrideable' do
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => './this-is-the-template-dir',
             'state_dir'                  => './this-is-the-state-dir',
@@ -437,7 +437,7 @@ describe PullRequestBot do
           @template_dir = File.join @config_dir, 'templates'
           @state_dir = File.join @config_dir, 'state'
           populate_template_dir(@template_dir, 'text')
-          write_config YAML.dump({
+          write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -534,7 +534,7 @@ describe PullRequestBot do
           @template_dir = File.join @config_dir, 'templates'
           @state_dir = File.join @config_dir, 'state'
           populate_template_dir(@template_dir, 'text')
-          write_config YAML.dump({
+          write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -612,7 +612,7 @@ describe PullRequestBot do
 
           describe 'grouped per repository' do
             before :each do
-              write_config YAML.dump({
+              write_config({
                 'default' => {
                   'template_dir'               => @template_dir,
                   'state_dir'                  => @state_dir,
@@ -650,7 +650,7 @@ describe PullRequestBot do
           @state_dir = File.join @config_dir, 'state'
           populate_template_dir(@template_dir, 'text')
 
-          write_config YAML.dump({
+          write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -765,7 +765,7 @@ describe PullRequestBot do
 
             describe "grouped per repository" do
               before :each do
-                write_config YAML.dump({
+                write_config({
                   'default' => {
                     'template_dir'               => @template_dir,
                     'state_dir'                  => @state_dir,
@@ -811,7 +811,7 @@ describe PullRequestBot do
         @template_dir = File.join @config_dir, 'templates'
         @state_dir = File.join @config_dir, 'state'
         populate_template_dir(@template_dir, 'text')
-        write_config YAML.dump({
+        write_config({
           'default' => {
             'template_dir'               => @template_dir,
             'state_dir'                  => @state_dir,
@@ -862,7 +862,7 @@ describe PullRequestBot do
 
         describe 'grouping pull requests' do
           before :each do
-            write_config YAML.dump({
+            write_config({
               'default' => {
                 'template_dir'               => @template_dir,
                 'state_dir'                  => @state_dir,
@@ -923,7 +923,7 @@ describe PullRequestBot do
 
         describe 'grouping pull requests' do
           before :each do
-            write_config YAML.dump({
+            write_config({
               'default' => {
                 'template_dir'               => @template_dir,
                 'state_dir'                  => @state_dir,
@@ -957,7 +957,7 @@ describe PullRequestBot do
         @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'with_snippits')
 
-        write_config YAML.dump({
+        write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -992,7 +992,7 @@ describe PullRequestBot do
         @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'html')
 
-        write_config YAML.dump({
+        write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -1027,7 +1027,7 @@ describe PullRequestBot do
         @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'text')
 
-        write_config YAML.dump({
+        write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -1062,7 +1062,7 @@ describe PullRequestBot do
         @state_dir    = File.join(@config_dir, 'state')
         populate_template_dir(@template_dir, 'text')
 
-        write_config YAML.dump({
+        write_config({
             'default' => {
               'template_dir'               => @template_dir,
               'state_dir'                  => @state_dir,
@@ -1092,7 +1092,7 @@ describe PullRequestBot do
   end
 
   def write_config(contents)
-    write_file @config_file, contents
+    write_file @config_file, YAML.dump(contents)
   end
 
   def write_file(path, contents)
