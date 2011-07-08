@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rspec'
+require 'rspec/autorun'
 require 'mocha'
 
 require 'tmpdir'
