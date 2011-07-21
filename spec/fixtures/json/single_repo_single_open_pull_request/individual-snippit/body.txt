@@ -1,24 +1,16 @@
-Please review the pull request #2.
+Please review the pull request #17.
 
-https://github.com/benprew/pony/pull/2 was opened by Daniel Lopes (danielvlopes): Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option
+https://github.com/puppetlabs/facter/pull/17 was opened by  (saysjonathan): Resolve encoding errors in Ruby 1.9
 
 Some more information about the pull request:
 ,----
 | This comes from the snippit!
-|   Opened: 2011-03-23T04:13:59Z
-|   Merges cleanly: No
-|   Based on: benprew:master (e5f5f1ea3ebac5e2db5ba7b45bdc2c5b9c4ea9ad)
-|   Requested merge: danielvlopes:master (562c2072ec478dbf540ffa3b577243be82e53235)
+|   Opened: 2011-07-05T23:28:37Z
+|   Merges cleanly: Yes
+|   Based on: puppetlabs:master (23bb324c71eaa1a51ddad87ab5561b00ae9749c5)
+|   Requested merge: saysjonathan:encoding (4d55d6954f5c3c692617c334dcc31683e351e810)
 `----
 
 Description:
 
-Hello, thanks for the Gem, it's awesome.
-
-I did a quick commit moving the code to Bundler. So I was able to do a bundle install and run the specs without the need of manual installations. I also added Rspec as a development dependency.
-
-I also moved most of the files from tabs to softabs (2 spaces) which is the convention for Ruby files. In this way we avoid issues with diferent identations depending of which Text Editor/ IDE you are using.
-
-My last contribution is a reply_to option that Mail supports but Pony not. It's importanto for contact forms because the user that will receive the email could quickly reply who sended the message.
-
-Thanks.
+While not pretty, this patch forces UTF-8 encoding on the xml returned from system_profiler. This allows Facter to actually run on Mac OS X hosts running Ruby 1.9.

@@ -4,10 +4,11 @@ https://github.com/benprew/pony/pull/27 was opened by Daniel Lopes (danielvlopes
 
 Some more information about the pull request:
   Opened: 2011-03-23T04:13:59Z
-  Merges cleanly: No
   Based on: benprew:master (e5f5f1ea3ebac5e2db5ba7b45bdc2c5b9c4ea9ad)
   Requested merge: danielvlopes:master (562c2072ec478dbf540ffa3b577243be82e53235)
 
 Description:
 
 This is another pull request
+
+Thanks.

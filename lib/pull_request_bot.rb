@@ -1,16 +1,16 @@
 require 'rubygems'
-require 'httparty'
 require 'mustache'
 require 'pony'
 require 'trollop'
 require 'yaml'
 
+require 'octocat_herder/connection'
+require 'octocat_herder/repository'
+require 'octocat_herder/pull_request'
+
 require 'pull_request_bot/recorded_requests'
 
 class PullRequestBot
-  include HTTParty
-  base_uri 'https://github.com/api/v2/json'
-
   attr_accessor :opts, :config
 
   def initialize
@@ -26,7 +26,7 @@ class PullRequestBot
     repositories.each do |repository, settings|
       recorded_requests = PullRequestBot::RecordedRequests.new(settings['state_dir'], repository)
 
-      handle_pull_requests(repository, settings, :open, recorded_requests)
+      handle_pull_requests(repository, settings, :open,   recorded_requests)
       handle_pull_requests(repository, settings, :closed, recorded_requests) if settings['alert_on_close']
     end
   end
@@ -46,22 +46,28 @@ class PullRequestBot
   private
 
   def handle_pull_requests(repository, settings, status, recorded_requests)
-    pull_requests = PullRequestBot.get("/pulls/#{repository}/#{status}")
-    return unless pull_requests.has_key?('pulls')
+    repository_owner, repository_name = repository.split('/', 2)
+    pull_requests = OctocatHerder::PullRequest.find_for_repository(
+      repository_owner,
+      repository_name,
+      status.to_s
+    )
+    return unless pull_requests and !pull_requests.empty?
 
     Mustache.template_path = settings['template_dir']
 
     body_type = settings['html_email'] ? :html_body : :body
 
-    pull_requests['pulls'] = filter_seen_requests(status, recorded_requests, pull_requests['pulls'])
-    return if pull_requests['pulls'].empty?
+    pull_requests = filter_seen_requests(status, recorded_requests, pull_requests)
+    return if pull_requests.empty?
+
+    pull_requests = pull_requests.map {|p| p.to_hash}
 
     if settings['group_pull_request_updates']
       template_prefix = 'group'
-      pull_requests = [pull_requests]
+      pull_requests   = [{'pulls' => pull_requests}]
     else
       template_prefix = 'individual'
-      pull_requests = pull_requests['pulls']
     end
 
     pull_requests.each do |request|
@@ -87,7 +93,7 @@ class PullRequestBot
 
   def filter_seen_requests(status, recorded_requests, pulls)
     pulls.reject do |req|
-      recorded_requests.send("#{status}?".to_sym, req['number'])
+      recorded_requests.send("#{status}?".to_sym, req.number)
     end
   end
 

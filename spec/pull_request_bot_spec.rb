@@ -3,10 +3,13 @@
 require 'spec_helper'
 
 require 'json'
+require 'octocat_herder/connection'
+require 'octocat_herder/pull_request'
 
 describe PullRequestBot do
   before :each do
-    Pony.stubs(:mail)
+    OctocatHerder::Connection.stubs(:get)
+#    Pony.stubs(:mail)
     ARGV.clear
   end
 
@@ -390,15 +393,18 @@ describe PullRequestBot do
         end
 
         it 'should request the list of open pull requests for the configured repository' do
-          PullRequestBot.expects(:get).
-            with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
+          OctocatHerder::PullRequest.expects(:find_for_repository).with(
+            'jhelwig',
+            'Ruby-GitHub-Pull-Request-Bot',
+            'open'
+          )
 
           PullRequestBot.new.run
         end
 
         describe 'with no open pull requests' do
           it 'should not send any mail' do
-            PullRequestBot.stubs(:get).returns({})
+            OctocatHerder::PullRequest.stubs(:find_for_repository)
             Pony.expects(:mail).never
 
             PullRequestBot.new.run
@@ -408,8 +414,11 @@ describe PullRequestBot do
         describe 'with a single open pull request' do
           describe 'configured to send plain-text messages' do
             before :each do
-              PullRequestBot.stubs(:get).returns(
-                JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+              OctocatHerder::PullRequest.stubs(:find_for_repository).returns(
+                [OctocatHerder::PullRequest.new(
+                  nil,
+                  JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+                )]
               )
             end
 
@@ -419,7 +428,7 @@ describe PullRequestBot do
                 :from    => 'noreply+from-address@technosorcery.net',
                 :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
                 :body    => read_fixture('json/single_repo_single_open_pull_request/individual/body.txt'),
-                :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+                :subject => 'New pull request: Resolve encoding errors in Ruby 1.9'
               ).returns nil
 
               PullRequestBot.new.run
@@ -429,8 +438,10 @@ describe PullRequestBot do
 
         describe 'with multiple open pull requests' do
           before :each do
-            PullRequestBot.stubs(:get).returns(
-              JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json'))
+            OctocatHerder::PullRequest.stubs(:find_for_repository).returns(
+              JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json')).map do |req|
+                OctocatHerder::PullRequest.new(nil, req)
+              end
             )
           end
 
@@ -481,7 +492,7 @@ describe PullRequestBot do
 
         describe 'with no closed pull requests' do
           it 'should not send any mail' do
-            PullRequestBot.stubs(:get).returns({})
+            OctocatHerder::PullRequest.stubs(:find_for_repository)
             Pony.expects(:mail).never
 
             PullRequestBot.new.run
@@ -490,9 +501,9 @@ describe PullRequestBot do
 
         describe 'with a single closed pull request' do
           before :each do
-            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
-            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
-              JSON.parse(read_fixture('json/single_repo_single_closed_pull_request.json'))
+            OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open').returns([])
+            OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'closed').returns(
+              [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/single_repo_single_closed_pull_request.json')))]
             )
           end
 
@@ -511,9 +522,11 @@ describe PullRequestBot do
 
         describe 'with multiple closed pull requests' do
           before :each do
-            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({'pulls' => []})
-            PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
-              JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json'))
+            OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open').returns([])
+            OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'closed').returns(
+              JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json')).map do |req|
+                OctocatHerder::PullRequest.new(nil, req)
+              end
             )
           end
 
@@ -594,17 +607,15 @@ describe PullRequestBot do
         end
 
         it 'should request the list of open pull requests for each configured repository' do
-          PullRequestBot.expects(:get).
-            with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({})
-          PullRequestBot.expects(:get).
-            with('/pulls/jhelwig/technosorcery.net/open').returns({})
+          OctocatHerder::PullRequest.expects(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open').returns([])
+          OctocatHerder::PullRequest.expects(:find_for_repository).with('jhelwig', 'technosorcery.net', 'open').returns([])
 
           PullRequestBot.new.run
         end
 
         describe 'with no open pull requests' do
           it 'should not send any mail' do
-            PullRequestBot.stubs(:get).returns({})
+            OctocatHerder::PullRequest.stubs(:find_for_repository).returns([])
             Pony.expects(:mail).never
 
             PullRequestBot.new.run
@@ -614,12 +625,12 @@ describe PullRequestBot do
         describe 'with a single open pull request' do
           describe 'configured to send plain-text messages' do
             before :each do
-              PullRequestBot.expects(:get).
-                with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').
-                returns(JSON.parse(read_fixture('json/first_repo_single_open_pull_request.json')))
-              PullRequestBot.expects(:get).
-                with('/pulls/jhelwig/technosorcery.net/open').
-                returns(JSON.parse(read_fixture('json/second_repo_single_open_pull_request.json')))
+              OctocatHerder::PullRequest.expects(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open').returns(
+                [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/first_repo_single_open_pull_request.json')))]
+              )
+              OctocatHerder::PullRequest.expects(:find_for_repository).with('jhelwig', 'technosorcery.net', 'open').returns(
+                [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/second_repo_single_open_pull_request.json')))]
+              )
             end
 
             it 'should send a single message per repository' do
@@ -645,12 +656,16 @@ describe PullRequestBot do
 
         describe 'with multiple open pull requests' do
           before :each do
-            PullRequestBot.expects(:get).
-              with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').
-              returns(JSON.parse(read_fixture('json/first_repo_multiple_open_pull_requests.json')))
-            PullRequestBot.expects(:get).
-              with('/pulls/jhelwig/technosorcery.net/open').
-              returns(JSON.parse(read_fixture('json/second_repo_multiple_open_pull_requests.json')))
+            OctocatHerder::PullRequest.expects(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open').returns(
+              JSON.parse(read_fixture('json/first_repo_multiple_open_pull_requests.json')).map do |req|
+                OctocatHerder::PullRequest.new(nil, req)
+              end
+            )
+            OctocatHerder::PullRequest.expects(:find_for_repository).with('jhelwig', 'technosorcery.net', 'open').returns(
+              JSON.parse(read_fixture('json/second_repo_multiple_open_pull_requests.json')).map do |req|
+                OctocatHerder::PullRequest.new(nil, req)
+              end
+            )
           end
 
           describe "configured to send plain-text messages" do
@@ -754,9 +769,11 @@ describe PullRequestBot do
 
       describe 'with open pull requests' do
         before :each do
-          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns({'pulls' => []})
-          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns(
-            JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json'))
+          OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'closed').returns([])
+          OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open').returns(
+            JSON.parse(read_fixture('json/single_repo_multiple_open_pull_requests.json')).map do |req|
+              OctocatHerder::PullRequest.new(nil, req)
+            end
           )
 
           PullRequestBot::RecordedRequests.any_instance.stubs(:open?).with(6).returns(true)
@@ -776,6 +793,7 @@ describe PullRequestBot do
         end
 
         it 'should record the notifications that are sent' do
+          Pony.stubs(:mail)
           PullRequestBot::RecordedRequests.any_instance.expects(:open).with(8)
 
           PullRequestBot.new.run
@@ -812,9 +830,11 @@ describe PullRequestBot do
 
       describe 'with closed pull requests' do
         before :each do
-          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/open').returns({'pulls' => []})
-          PullRequestBot.stubs(:get).with('/pulls/jhelwig/Ruby-GitHub-Pull-Request-Bot/closed').returns(
-            JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json'))
+          OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'open')
+          OctocatHerder::PullRequest.stubs(:find_for_repository).with('jhelwig', 'Ruby-GitHub-Pull-Request-Bot', 'closed').returns(
+            JSON.parse(read_fixture('json/single_repo_multiple_closed_pull_requests.json')).map do |req|
+              OctocatHerder::PullRequest.new(nil, req)
+            end
           )
 
           PullRequestBot::RecordedRequests.any_instance.stubs(:closed?).with(1).returns(false)
@@ -834,6 +854,7 @@ describe PullRequestBot do
         end
 
         it 'should record the notifications that are sent' do
+          Pony.stubs(:mail)
           PullRequestBot::RecordedRequests.any_instance.expects(:close).with(1)
 
           PullRequestBot.new.run
@@ -890,8 +911,8 @@ describe PullRequestBot do
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
 
-        PullRequestBot.stubs(:get).returns(
-          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        OctocatHerder::PullRequest.stubs(:find_for_repository).returns(
+          [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json')))]
         )
 
         Pony.expects(:mail).once.with(
@@ -899,7 +920,7 @@ describe PullRequestBot do
           :from    => 'noreply+from-address@technosorcery.net',
           :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
           :body    => read_fixture('json/single_repo_single_open_pull_request/individual-snippit/body.txt'),
-          :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+          :subject => 'New pull request: Resolve encoding errors in Ruby 1.9'
         ).returns nil
 
         PullRequestBot.new.run
@@ -925,8 +946,8 @@ describe PullRequestBot do
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
 
-        PullRequestBot.stubs(:get).returns(
-          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        OctocatHerder::PullRequest.stubs(:find_for_repository).returns(
+          [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json')))]
         )
 
         Pony.expects(:mail).once.with(
@@ -934,7 +955,7 @@ describe PullRequestBot do
           :from      => 'noreply+from-address@technosorcery.net',
           :headers   => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
           :html_body => read_fixture('json/single_repo_single_open_pull_request/individual/body.html'),
-          :subject   => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+          :subject   => 'New pull request: Resolve encoding errors in Ruby 1.9'
         ).returns nil
 
         PullRequestBot.new.run
@@ -960,8 +981,8 @@ describe PullRequestBot do
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
 
-        PullRequestBot.stubs(:get).returns(
-          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        OctocatHerder::PullRequest.stubs(:find_for_repository).returns(
+          [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json')))]
         )
 
         Pony.expects(:mail).once.with(
@@ -969,7 +990,7 @@ describe PullRequestBot do
           :from    => 'noreply+from-address@technosorcery.net',
           :headers => { 'Reply-To' => 'noreply+reply-to-address@technosorcery.net' },
           :body    => read_fixture('json/single_repo_single_open_pull_request/individual/body.txt'),
-          :subject => 'New pull request: Add Bundler, move from tabs to ruby convetion of 2 spaces and add reply_to option'
+          :subject => 'New pull request: Resolve encoding errors in Ruby 1.9'
         ).returns nil
 
         PullRequestBot.new.run
@@ -995,13 +1016,14 @@ describe PullRequestBot do
             'jhelwig/Ruby-GitHub-Pull-Request-Bot' => {}
         })
 
-        PullRequestBot.stubs(:get).returns(
-          JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json'))
+        OctocatHerder::PullRequest.stubs(:find_for_repository).returns(
+          [OctocatHerder::PullRequest.new(nil, JSON.parse(read_fixture('json/single_repo_single_open_pull_request.json')))]
         )
         Mustache.expects(:render).at_least_once.with do |template, request|
           request.should have_key('repository_name')
           request['repository_name'].should == 'jhelwig/Ruby-GitHub-Pull-Request-Bot'
         end
+        Pony.stubs(:mail)
 
         PullRequestBot.new.run
       end

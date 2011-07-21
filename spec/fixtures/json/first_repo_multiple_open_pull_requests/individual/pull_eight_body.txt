@@ -4,7 +4,6 @@ https://github.com/puppetlabs/facter/pull/8 was opened by Ramon van Alteren (ram
 
 Some more information about the pull request:
   Opened: 2011-04-20T10:58:36Z
-  Merges cleanly: Yes
   Based on: puppetlabs:master (cfcc4285e2e505700e16142deb10f58523a05f08)
   Requested merge: ramonvanalteren:master (447fb980e1d28917b43100bdc1e8331dbc48c25d)
 
@@ -12,3 +11,5 @@ Description:
 
 I added virtualbox support in the virtual fact for lspci and dmidecode
 It works, provided (on my system) that you are root when  running facter due to the permissions on lspci and dmidecode
+
+Thanks.
