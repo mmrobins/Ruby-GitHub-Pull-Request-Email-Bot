@@ -4,7 +4,6 @@ https://github.com/benprew/pony/pull/2 was opened by Daniel Lopes (danielvlopes)
 
 Some more information about the pull request:
   Opened: 2011-03-23T04:13:59Z
-  Merges cleanly: No
   Based on: benprew:master (e5f5f1ea3ebac5e2db5ba7b45bdc2c5b9c4ea9ad)
   Requested merge: danielvlopes:master (562c2072ec478dbf540ffa3b577243be82e53235)
 
@@ -17,5 +16,7 @@ I did a quick commit moving the code to Bundler. So I was able to do a bundle in
 I also moved most of the files from tabs to softabs (2 spaces) which is the convention for Ruby files. In this way we avoid issues with diferent identations depending of which Text Editor/ IDE you are using.
 
 My last contribution is a reply_to option that Mail supports but Pony not. It's importanto for contact forms because the user that will receive the email could quickly reply who sended the message.
+
+Thanks.
 
 Thanks.

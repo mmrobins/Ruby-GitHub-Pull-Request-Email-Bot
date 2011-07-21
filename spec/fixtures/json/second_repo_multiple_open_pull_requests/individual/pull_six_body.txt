@@ -4,10 +4,11 @@ https://github.com/puppetlabs/facter2/pull/6 was opened by Mauro Pompilio (maldi
 
 Some more information about the pull request:
   Opened: 2011-04-12T23:43:48Z
-  Merges cleanly: No
   Based on: puppetlabs:next (6e02daa1ed56f9758226f4e640ec419395868728)
   Requested merge: malditogeek:ticket/next/6614 (1eb3667142d2f56ad5436d91c457a776c52dd3c7)
 
 Description:
 
 Ticket: https://projects.puppetlabs.com/issues/6614
+
+Thanks.

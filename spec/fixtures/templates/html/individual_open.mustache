@@ -9,19 +9,11 @@
     <p>Some more information about the pull request:<br />
     <ul>
       <li>Opened: {{created_at}}</li>
-      <li>Merges cleanly:
-      {{#mergeable}}
-        Yes
-      {{/mergeable}}
-      {{^mergeable}}
-        No
-      {{/mergeable}}
-      </li>
       {{#base}}
-        <li>Based on: {{label}} ({{sha}})</li>
+      <li>Based on: {{label}} ({{sha}})</li>
       {{/base}}
       {{#head}}
-        <li>Requested merge: {{label}} ({{sha}})</li>
+      <li>Requested merge: {{label}} ({{sha}})</li>
       {{/head}}
     </ul></p>
 
