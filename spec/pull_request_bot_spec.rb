@@ -299,7 +299,30 @@ describe PullRequestBot do
         )
       end
 
-      it "should require a repository section of the form 'user-name/repository-name'" do
+      it "should require a repository section to be in the form 'user-name/repository-name'" do
+        invalid_repo_name = '@#$%^&invalid-user/invalid-repository#$%^'
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => false,
+            'open_subject'               => '',
+          },
+          invalid_repo_name =>  {}
+        })
+
+        lambda { PullRequestBot.new }.should raise_error(
+          ArgumentError,
+          /Repositories must be of the form 'user-name\/repository-name': #{Regexp.escape(invalid_repo_name)}/
+        )
+      end
+
+      it "should require a '/' to separate the user from the repository name" do
         write_config YAML.dump({
           'default' => {
             'template_dir'               => '',
@@ -319,6 +342,25 @@ describe PullRequestBot do
           ArgumentError,
           /Repositories must be of the form 'user-name\/repository-name': not-a-valid-repository-section/
         )
+      end
+
+      it "should allow '.' in repository names" do
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => false,
+            'open_subject'               => '',
+          },
+          'jhelwig/technosorcery.net' =>  {}
+        })
+
+        lambda { PullRequestBot.new }.should_not raise_error
       end
     end
 

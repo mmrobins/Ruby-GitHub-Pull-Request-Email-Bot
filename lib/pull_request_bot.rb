@@ -140,8 +140,9 @@ class PullRequestBot
     config.keys.each do |section|
       next if section == "default"
 
-      raise ArgumentError.new("Repositories must be of the form 'user-name/repository-name': #{section}") unless
-        section.match /[a-z0-9_-]+\/[a-z0-9_-]+/i
+      raise ArgumentError.new(
+        "Repositories must be of the form 'user-name/repository-name': #{section}"
+      ) unless section.match(/^[a-z0-9_-]+\/[a-z0-9_.-]+$/i)
     end
   end
 end
