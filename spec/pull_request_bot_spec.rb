@@ -318,11 +318,11 @@ describe PullRequestBot do
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError,
-          /Repositories must be of the form 'user-name\/repository-name': #{Regexp.escape(invalid_repo_name)}/
+          "Repositories & users must be of the form '<user-name>/<repository-name>' or '<user-name>': #{invalid_repo_name}"
         )
       end
 
-      it "should require a '/' to separate the user from the repository name" do
+      it "should not allow more than one '/' in repository or user sections" do
         write_config YAML.dump({
           'default' => {
             'template_dir'               => '',
@@ -335,12 +335,12 @@ describe PullRequestBot do
             'alert_on_close'             => false,
             'open_subject'               => '',
           },
-          'not-a-valid-repository-section' =>  {}
+          'not/a/valid/repository/section' =>  {}
         })
 
         lambda { PullRequestBot.new }.should raise_error(
           ArgumentError,
-          /Repositories must be of the form 'user-name\/repository-name': not-a-valid-repository-section/
+          /Repositories & users must be of the form '<user-name>\/<repository-name>' or '<user-name>': not\/a\/valid\/repository\/section/
         )
       end
 
@@ -358,6 +358,25 @@ describe PullRequestBot do
             'open_subject'               => '',
           },
           'jhelwig/technosorcery.net' =>  {}
+        })
+
+        lambda { PullRequestBot.new }.should_not raise_error
+      end
+
+      it "should specifying only the account owner" do
+        write_config YAML.dump({
+          'default' => {
+            'template_dir'               => '',
+            'state_dir'                  => '',
+            'to_email_address'           => '',
+            'from_email_address'         => '',
+            'reply_to_email_address'     => '',
+            'html_email'                 => '',
+            'group_pull_request_updates' => '',
+            'alert_on_close'             => false,
+            'open_subject'               => '',
+          },
+          'jhelwig' =>  {}
         })
 
         lambda { PullRequestBot.new }.should_not raise_error
